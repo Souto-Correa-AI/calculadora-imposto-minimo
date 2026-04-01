@@ -3,1328 +3,664 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora do Imposto Mínimo para Alta Renda</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Literata:wght@400;600;700&family=Avenir:wght@400;500;700&display=swap" rel="stylesheet">
-    
+    <title>Calculadora IRPFM 2026 — Souto Correa</title>
     <style>
-        * {
+        *, *::before, *::after {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
         }
 
         body {
-            background-color: #FFFFFF;
-            color: #000000;
-            font-family: 'Avenir', system-ui, Verdana, sans-serif;
-            padding: 0;
-            margin: 0;
+            font-family: 'Segoe UI Historic', 'Segoe UI', sans-serif;
+            background: #F7F5F2;
+            color: #1a1a1a;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .main-container {
+        /* HEADER */
+        header {
+            background: #000;
+            border-bottom: 3px solid #FF5527;
+            padding: 16px 24px;
             display: flex;
-            justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 40px 20px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
-        .container {
-            width: 100%;
-            max-width: 600px;
+        .header-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #FFF;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
         }
 
-        .logo {
-            text-align: center;
-            margin-bottom: 32px;
+        .header-badge::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #FF5527;
+            flex-shrink: 0;
         }
 
-        .logo img {
-            max-width: 280px;
-            width: 100%;
-            height: auto;
+        .header-title {
+            color: #C1B39F;
+            font-size: 13px;
+            font-weight: 400;
+            letter-spacing: 0.03em;
         }
 
-        .card {
-            background-color: #FFFFFF;
-            border: 2px solid #C1B39F;
-            border-radius: 16px;
-            padding: 48px 40px;
-            text-align: center;
-            margin-bottom: 32px;
+        /* MAIN */
+        main {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 40px 20px 60px;
         }
 
         h1 {
-            font-family: 'Literata', Georgia, serif;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            color: #000000;
-            margin-bottom: 12px;
+            color: #000;
+            margin-bottom: 6px;
             line-height: 1.2;
         }
 
         .subtitle {
-            font-family: 'Avenir', system-ui, Verdana, sans-serif;
             font-size: 14px;
-            font-weight: 400;
             color: #635C54;
             margin-bottom: 32px;
-            line-height: 1.5;
         }
 
-        .input-group {
+        /* TABS */
+        .tabs {
             display: flex;
-            gap: 12px;
-            margin-bottom: 32px;
-            align-items: stretch;
+            gap: 0;
+            margin-bottom: 28px;
+            border-bottom: 2px solid #C1B39F;
         }
 
-        #renda-anual {
-            flex: 1;
-            padding: 14px 16px;
-            font-size: 16px;
-            font-family: 'Avenir', system-ui, Verdana, sans-serif;
-            border: 2px solid #C1B39F;
-            border-radius: 8px;
-            background-color: #FFFFFF;
-            color: #000000;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        #renda-anual::placeholder {
-            color: #C1B39F;
-            font-size: 14px;
-        }
-
-        #renda-anual.valid {
-            border-color: #635C54;
-            background-color: #FFFFFF;
-        }
-
-        #renda-anual.invalid {
-            border-color: #F15B40;
-            background-color: #FFFFFF;
-        }
-
-        #renda-anual.invalid::placeholder {
-            color: #F15B40;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        button#calcular {
-            padding: 14px 28px;
-            font-size: 14px;
-            font-weight: 600;
-            font-family: 'Avenir', system-ui, Verdana, sans-serif;
-            background-color: #F15B40;
-            color: #FFFFFF;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            white-space: nowrap;
-        }
-
-        button#calcular:hover {
-            background-color: #D94A2F;
-            transform: translateY(-2px);
-        }
-
-        button#calcular:active {
-            transform: translateY(0);
-        }
-
-        #result-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-top: 32px;
-            opacity: 0.5;
-            transition: all 0.3s ease;
-            pointer-events: none;
-        }
-
-        #result-section.valid {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        #result-section.invalid {
-            opacity: 0.3;
-        }
-
-        .bubble {
-            background-color: #C1B39F;
-            border-radius: 12px;
-            padding: 24px 16px;
-            transition: all 0.3s ease;
-        }
-
-        .bubble.valid {
-            background-color: #C1B39F;
-            border: 2px solid #635C54;
-        }
-
-        .bubble.invalid {
-            background-color: #FFF5F0;
-            border: 2px solid #F15B40;
-        }
-
-        .result-caption {
-            font-size: 12px;
-            font-weight: 500;
-            color: #635C54;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .bubble.invalid .result-caption {
-            color: #F15B40;
-        }
-
-        .highlight_2 {
-            font-size: 28px;
-            font-weight: 700;
-            color: #000000;
-            font-family: 'Avenir', system-ui, Verdana, sans-serif;
-            transition: all 0.3s ease;
-        }
-
-        .highlight_2.invalid {
-            color: #F15B40;
-        }
-
-        .institutional-text {
-            background-color: #FFFFFF;
-            border: 2px solid #C1B39F;
-            border-radius: 16px;
-            padding: 32px 40px;
-            text-align: left;
-            margin-bottom: 32px;
-        }
-
-        .institutional-text p {
-            font-family: 'Avenir', system-ui, Verdana, sans-serif;
-            font-size: 14px;
-            line-height: 1.8;
-            color: #635C54;
-            margin-bottom: 16px;
-        }
-
-        .institutional-text p:last-child {
-            margin-bottom: 0;
-        }
-
-        .institutional-text p:first-child {
-            font-weight: 500;
-            color: #000000;
-        }
-
-        /* Seção da calculadora por categoria */
-        .calculator-section {
-            background-color: #FFFFFF;
-            border: 2px solid #C1B39F;
-            border-radius: 16px;
-            padding: 32px 40px;
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        .calculator-section h2 {
-            font-family: 'Literata', Georgia, serif;
-            font-size: 20px;
-            font-weight: 700;
-            color: #635C54;
-            margin-bottom: 16px;
-            line-height: 1.3;
-        }
-
-        .calculator-section p {
-            font-family: 'Avenir', system-ui, Verdana, sans-serif;
-            font-size: 14px;
-            color: #635C54;
-            margin-bottom: 24px;
-            line-height: 1.6;
-        }
-
-        .calculator-section button {
-            padding: 14px 32px;
-            font-size: 14px;
-            font-weight: 600;
-            font-family: 'Avenir', system-ui, Verdana, sans-serif;
-            background-color: #F15B40;
-            color: #FFFFFF;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .calculator-section button:hover {
-            background-color: #D94A2F;
-            transform: translateY(-2px);
-        }
-
-        .calculator-section button:active {
-            transform: translateY(0);
-        }
-
-        /* Calculadora por categoria (inicialmente oculta) */
-        #calculator-detailed {
-            display: none;
-            background-color: #C1B39F;
-            border-radius: 16px;
-            padding: 32px;
-            margin-bottom: 32px;
-            animation: slideDown 0.5s ease;
-        }
-
-        #calculator-detailed.visible {
-            display: block;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .calc-detailed-title {
-            font-family: 'Literata', Georgia, serif;
-            font-size: 22px;
-            font-weight: 600;
-            color: #635C54;
-            margin-bottom: 8px;
-            text-align: center;
-        }
-
-        .calc-detailed-subtitle {
+        .tab {
+            padding: 10px 24px;
             font-size: 13px;
-            color: #635C54;
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        .section {
-            margin-bottom: 24px;
-        }
-
-        .section-title {
-            font-family: 'Literata', Georgia, serif;
-            font-size: 14px;
             font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            color: #635C54;
+            transition: color 0.15s, border-color 0.15s;
+        }
+
+        .tab:hover {
+            color: #000;
+        }
+
+        .tab.active {
+            color: #000;
+            border-bottom-color: #FF5527;
+        }
+
+        /* SECTIONS */
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
             color: #635C54;
             margin-bottom: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            text-align: left;
+            margin-top: 24px;
         }
 
-        .form-group {
-            margin-bottom: 12px;
+        .section-label:first-child {
+            margin-top: 0;
         }
 
-        label {
+        /* FORM FIELDS */
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
             display: block;
             font-size: 13px;
-            font-weight: 500;
-            color: #000000;
-            margin-bottom: 5px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
         }
 
-        .calc-input {
+        .field .sublabel {
+            display: block;
+            font-size: 11px;
+            color: #635C54;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .field input {
             width: 100%;
             padding: 10px 12px;
-            font-family: 'Avenir', system-ui, Verdana, sans-serif;
-            font-size: 14px;
-            border: 1px solid #635C54;
-            border-radius: 4px;
-            background-color: #FFFFFF;
-            color: #000000;
-        }
-
-        .calc-input:focus {
+            font-size: 16px;
+            font-family: inherit;
+            border: 1px solid #C1B39F;
+            border-radius: 0;
+            background: #FFF;
+            color: #000;
             outline: none;
-            border-color: #F15B40;
-            box-shadow: 0 0 0 2px rgba(241, 91, 64, 0.1);
+            transition: border-color 0.15s;
         }
 
-        .checkbox-group {
-            display: flex;
-            align-items: center;
+        .field input:focus {
+            border-color: #FF5527;
+        }
+
+        .field input::placeholder {
+            color: #b5ada5;
+        }
+
+        /* INFO BOX */
+        .info-box {
+            background: #FFF;
+            border: 1px solid #C1B39F;
+            padding: 16px 18px;
+            margin-top: 24px;
+            margin-bottom: 8px;
+        }
+
+        .info-box h3 {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #635C54;
             margin-bottom: 10px;
         }
 
-        input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            margin-right: 10px;
-            cursor: pointer;
-            accent-color: #F15B40;
+        .info-box ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
         }
 
-        .checkbox-label {
-            font-size: 13px;
-            color: #000000;
-            cursor: pointer;
-            margin: 0;
+        .info-box li {
+            font-size: 12px;
+            color: #635C54;
+            background: #F7F5F2;
+            padding: 4px 10px;
+            border: 1px solid #e0dbd5;
         }
 
-        .calc-button {
-            width: 100%;
-            padding: 12px 24px;
-            font-family: 'Avenir', system-ui, Verdana, sans-serif;
-            font-size: 14px;
-            font-weight: 600;
-            background-color: #F15B40;
-            color: #FFFFFF;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            margin-top: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .calc-button:hover {
-            background-color: #D94A2F;
-        }
-
-        .calc-button:active {
-            background-color: #C63D1F;
-        }
-
-        .calc-results {
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(99, 92, 84, 0.2);
+        /* MODE PANELS */
+        .mode-panel {
             display: none;
         }
 
-        .calc-results.visible {
+        .mode-panel.active {
             display: block;
         }
 
-        .result-item {
+        /* RESULTS */
+        .results {
+            margin-top: 36px;
+            border-top: 2px solid #000;
+            padding-top: 28px;
+        }
+
+        .results-title {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #635C54;
+            margin-bottom: 18px;
+        }
+
+        /* GAUGE */
+        .gauge-container {
+            margin-bottom: 24px;
+        }
+
+        .gauge-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            font-size: 13px;
-        }
-
-        .result-label {
-            color: #635C54;
-            font-weight: 500;
-        }
-
-        .result-value {
-            font-family: 'Avenir', system-ui, Verdana, sans-serif;
-            font-weight: 600;
-            color: #000000;
-            text-align: right;
-        }
-
-        .status-below {
-            background-color: rgba(99, 92, 84, 0.05);
-            padding: 12px;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 13px;
-            color: #635C54;
-            font-weight: 500;
-            margin-bottom: 12px;
-        }
-
-        .aliquota-value {
-            color: #F15B40;
-            font-weight: 700;
-        }
-
-        .imposto-value {
-            color: #F15B40;
-            font-weight: 700;
-        }
-
-        .close-calculator {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .close-calculator button {
-            padding: 10px 20px;
-            font-size: 12px;
-            font-weight: 600;
-            background-color: transparent;
-            color: #635C54;
-            border: 1px solid #635C54;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .close-calculator button:hover {
-            background-color: #635C54;
-            color: #FFFFFF;
-        }
-
-        /* Modal de Autenticacao */
-        .auth-modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.3s ease;
-        }
-
-        .auth-modal.visible {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        .auth-modal-content {
-            background-color: #FFFFFF;
-            border: 2px solid #C1B39F;
-            border-radius: 16px;
-            padding: 40px;
-            max-width: 450px;
-            width: 90%;
-            text-align: center;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .auth-modal-title {
-            font-family: 'Literata', Georgia, serif;
-            font-size: 22px;
-            font-weight: 700;
-            color: #635C54;
-            margin-bottom: 16px;
-        }
-
-        .auth-modal-subtitle {
-            font-size: 14px;
-            color: #635C54;
-            margin-bottom: 24px;
-            line-height: 1.6;
-        }
-
-        .auth-form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .auth-form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: #000000;
+            align-items: baseline;
             margin-bottom: 8px;
         }
 
-        .auth-form-group input {
-            width: 100%;
-            padding: 12px 14px;
-            font-size: 14px;
-            font-family: 'Avenir', system-ui, Verdana, sans-serif;
-            border: 2px solid #C1B39F;
-            border-radius: 8px;
-            background-color: #FFFFFF;
-            color: #000000;
-            transition: all 0.3s ease;
-        }
-
-        .auth-form-group input:focus {
-            outline: none;
-            border-color: #F15B40;
-            box-shadow: 0 0 0 2px rgba(241, 91, 64, 0.1);
-        }
-
-        .auth-form-group input.error {
-            border-color: #F15B40;
-            background-color: #FFF5F0;
-        }
-
-        .auth-error-message {
-            display: none;
-            color: #F15B40;
-            font-size: 13px;
-            margin-top: 8px;
-            font-weight: 500;
-        }
-
-        .auth-error-message.visible {
-            display: block;
-        }
-
-        .auth-button-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 28px;
-        }
-
-        .auth-button-group button {
-            flex: 1;
-            padding: 12px 20px;
-            font-size: 14px;
+        .gauge-label {
+            font-size: 12px;
             font-weight: 600;
-            font-family: 'Avenir', system-ui, Verdana, sans-serif;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .auth-button-group .auth-submit {
-            background-color: #F15B40;
-            color: #FFFFFF;
-        }
-
-        .auth-button-group .auth-submit:hover {
-            background-color: #D94A2F;
-            transform: translateY(-2px);
-        }
-
-        .auth-button-group .auth-cancel {
-            background-color: transparent;
             color: #635C54;
-            border: 2px solid #C1B39F;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
         }
 
-        .auth-button-group .auth-cancel:hover {
-            background-color: #C1B39F;
-            color: #FFFFFF;
+        .gauge-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #000;
         }
 
-        .auth-denied-message {
-            display: none;
-            background-color: #FFF5F0;
-            border: 2px solid #F15B40;
-            border-radius: 12px;
+        .gauge-track {
+            width: 100%;
+            height: 10px;
+            background: #e8e3dd;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #C1B39F, #FF5527);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .gauge-ticks {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        .gauge-ticks span {
+            font-size: 10px;
+            color: #635C54;
+        }
+
+        /* RESULT ROWS */
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e8e3dd;
+        }
+
+        .result-row .label {
+            font-size: 13px;
+            color: #635C54;
+        }
+
+        .result-row .value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+            text-align: right;
+        }
+
+        /* MAIN RESULT CARD */
+        .result-main {
+            background: #000;
+            color: #FFF;
             padding: 20px;
             margin-top: 20px;
-            text-align: center;
+            border-left: 4px solid #FF5527;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
-        .auth-denied-message.visible {
-            display: block;
-        }
-
-        .auth-denied-message h3 {
-            font-family: 'Literata', Georgia, serif;
-            font-size: 16px;
-            font-weight: 700;
-            color: #F15B40;
-            margin-bottom: 12px;
-        }
-
-        .auth-denied-message p {
+        .result-main .label {
             font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #C1B39F;
+        }
+
+        .result-main .value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #FFF;
+        }
+
+        /* STATUS TAG */
+        .status-tag {
+            display: inline-block;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-top: 14px;
+        }
+
+        .status-tag.green {
+            background: #15803d;
+            color: #FFF;
+        }
+
+        .status-tag.orange {
+            background: #FF5527;
+            color: #FFF;
+        }
+
+        /* FOOTER INFO */
+        .legal-footer {
+            margin-top: 40px;
+            padding: 18px;
+            background: #FFF;
+            border: 1px solid #e0dbd5;
+            font-size: 12px;
             color: #635C54;
             line-height: 1.6;
-            margin-bottom: 12px;
         }
 
-        .auth-denied-message p:last-child {
-            margin-bottom: 0;
+        .legal-footer strong {
+            color: #1a1a1a;
         }
 
-        .auth-denied-message a {
-            color: #F15B40;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        .auth-denied-message a:hover {
-            text-decoration: underline;
-        }
-
-        @media (max-width: 640px) {
-            .main-container {
-                padding: 24px 20px;
-                min-height: auto;
+        /* RESPONSIVE */
+        @media (max-width: 520px) {
+            header {
+                padding: 12px 16px;
             }
 
-            .logo {
-                margin-bottom: 24px;
-            }
-
-            .logo img {
-                max-width: 220px;
-            }
-
-            .card {
-                padding: 32px 24px;
-                border-radius: 12px;
-                margin-bottom: 24px;
+            main {
+                padding: 24px 16px 48px;
             }
 
             h1 {
-                font-size: 20px;
-                margin-bottom: 8px;
+                font-size: 22px;
             }
 
-            .subtitle {
-                font-size: 13px;
-                margin-bottom: 24px;
+            .tab {
+                padding: 10px 16px;
+                font-size: 12px;
             }
 
-            .input-group {
-                flex-direction: column;
-                gap: 12px;
-                margin-bottom: 24px;
-            }
-
-            button#calcular {
-                width: 100%;
-            }
-
-            #result-section {
-                gap: 12px;
-                margin-top: 24px;
-            }
-
-            .bubble {
-                padding: 20px 12px;
-            }
-
-            .result-caption {
-                font-size: 11px;
-            }
-
-            .highlight_2 {
-                font-size: 24px;
-            }
-
-            .institutional-text {
-                padding: 24px 20px;
-                border-radius: 12px;
-                margin-bottom: 24px;
-            }
-
-            .institutional-text p {
-                font-size: 13px;
-                line-height: 1.7;
-            }
-
-            .calculator-section {
-                padding: 24px 20px;
-                margin-bottom: 24px;
-            }
-
-            .calculator-section h2 {
-                font-size: 18px;
-                margin-bottom: 12px;
-            }
-
-            .calculator-section p {
-                font-size: 13px;
-                margin-bottom: 20px;
-            }
-
-            #calculator-detailed {
-                padding: 24px;
-                margin-bottom: 24px;
-            }
-
-            .calc-detailed-title {
+            .result-main .value {
                 font-size: 20px;
             }
 
-            .calc-detailed-subtitle {
-                font-size: 12px;
-            }
-
-            .section-title {
-                font-size: 12px;
-            }
-
-            label {
-                font-size: 12px;
-            }
-
-            .calc-input {
-                font-size: 16px;
-                padding: 12px;
-            }
-
-            .checkbox-label {
-                font-size: 12px;
-            }
-
-            .result-item {
-                font-size: 12px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .logo img {
-                max-width: 180px;
-            }
-
-            .card {
-                padding: 24px 16px;
-            }
-
-            h1 {
-                font-size: 18px;
-            }
-
-            .subtitle {
-                font-size: 12px;
-            }
-
-            .highlight_2 {
-                font-size: 20px;
-            }
-
-            .institutional-text {
-                padding: 20px 16px;
-            }
-
-            .institutional-text p {
-                font-size: 12px;
-            }
-
-            .calculator-section {
-                padding: 20px 16px;
-            }
-
-            .calculator-section h2 {
-                font-size: 16px;
-            }
-
-            #calculator-detailed {
-                padding: 20px;
-            }
-
-            .calc-detailed-title {
+            .gauge-value {
                 font-size: 18px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="main-container">
-        <div class="container">
-            <div class="logo">
-                <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663252903724/dzhGwOveqbnFYEoN.png" alt="Souto Correa Advogados">
-            </div>
 
-            <div class="card">
-                <h1>Calculadora do Imposto Mínimo para Alta Renda</h1>
-                <p class="subtitle">Simule seu imposto com base na renda anual</p>
+<header>
+    <div class="header-badge">Souto Correa · Hub de IA</div>
+    <div class="header-title">Calculadora IRPFM 2026</div>
+</header>
 
-                <div class="input-group">
-                    <input 
-                        type="text" 
-                        id="renda-anual" 
-                        placeholder="    R$ 0,00"
-                        autocomplete="off"
-                    >
-                    <button id="calcular">Calcular</button>
-                </div>
+<main>
+    <h1>Calculadora do IRPFM</h1>
+    <p class="subtitle">Imposto de Renda da Pessoa Física Mínimo — Lei nº 15.270/2025</p>
 
-                <section id="result-section">
-                    <div class="bubble">
-                        <div class="result-caption" id="result-caption-left">Seu imposto será de:</div>
-                        <div class="highlight_2" id="imposto">—</div>
-                    </div>
-                    <div class="bubble">
-                        <div class="result-caption" id="result-caption-right">Sua alíquota será de:</div>
-                        <div class="highlight_2" id="aliquota">—</div>
-                    </div>
-                </section>
-            </div>
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab active" data-mode="basico" type="button">Básico</button>
+        <button class="tab" data-mode="avancado" type="button">Avançado</button>
+    </div>
 
-            <div class="institutional-text">
-                <p>Esta calculadora tem caráter informativo e simulatório. A aplicação prática das regras tributárias pode variar conforme a estrutura, o setor de atuação e as características específicas de cada pessoa ou empresa.</p>
-                
-                <p>Caso ainda haja dúvidas, o escritório conta com advogados especializados em Direito Tributário, com atuação consistente em consultoria e contencioso, abrangendo tributos municipais, estaduais, federais e tributação internacional.</p>
-                
-                <p>Nossa equipe está preparada para analisar cenários complexos, esclarecer impactos práticos e orientar decisões com rigor técnico, segurança jurídica e visão de negócio.</p>
-            </div>
-
-            <div class="calculator-section">
-                <h2>Conheça nossa Calculadora Avançada</h2>
-                <p>Calculadora do Imposto Mínimo — Rendas por Categoria</p>
-                <p style="font-size: 12px; color: #635C54; margin-bottom: 20px;">Simule seu imposto com base em múltiplas categorias de renda</p>
-                <button onclick="abrirModalAutenticacao()">Abrir Calculadora Avancada</button>
-            </div>
-
-            <!-- Modal de Autenticacao -->
-            <div id="authModal" class="auth-modal">
-                <div class="auth-modal-content">
-                    <div class="auth-modal-title">Acesso a Calculadora</div>
-                    <p class="auth-modal-subtitle">Digite seu e-mail para acessar a calculadora avan&ccedil;ada</p>
-
-                    <div class="auth-form-group">
-                        <label for="authEmail">E-mail</label>
-                        <input type="email" id="authEmail" placeholder="nome@empresa.com.br">
-                        <div class="auth-error-message" id="authErrorMessage">Email invalido. Use seu email corporativo @soutocorrea.com.br ou @soutocorrea.com</div>
-                    </div>
-
-                    <div class="auth-form-group" style="display: flex; align-items: center; margin-bottom: 20px;">
-                        <input type="checkbox" id="authRemember" style="width: 16px; height: 16px; margin-right: 8px; cursor: pointer; accent-color: #F15B40;">
-                        <label for="authRemember" style="margin: 0; font-size: 13px; color: #635C54; cursor: pointer;">Lembrar meu e-mail neste dispositivo</label>
-                    </div>
-
-                    <div class="auth-denied-message" id="authDeniedMessage">
-                        <h3>Acesso Restrito</h3>
-                        <p>Esta calculadora &eacute; exclusiva para colaboradores e clientes do Souto Correa.</p>
-                        <p>Para solicitar acesso, entre em contato com nossa <strong>&aacute;rea de Direito Tribut&aacute;rio</strong>.</p>
-                    </div>
-
-                    <div class="auth-button-group">
-                        <button type="button" class="auth-submit" onclick="validarEmailAutenticacao()">Acessar</button>
-                        <button type="button" class="auth-cancel" onclick="fecharModalAutenticacao()">Cancelar</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Calculadora Detalhada (inicialmente oculta) -->
-            <div id="calculator-detailed">
-                <div class="calc-detailed-title">Calculadora do Imposto Mínimo</div>
-                <p class="calc-detailed-subtitle">Rendas por Categoria</p>
-
-                <form id="calculatorForm">
-                    <!-- SEÇÃO RENDAS -->
-                    <div class="section">
-                        <div class="section-title">Rendas</div>
-
-                        <div class="form-group">
-                            <label for="salario">Salário / Pró-labore (tributável)</label>
-                            <input type="text" id="salario" class="calc-input" placeholder="R$ 0,00" value="R$ 0,00">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="alugueis">Aluguéis (tributável)</label>
-                            <input type="text" id="alugueis" class="calc-input" placeholder="R$ 0,00" value="R$ 0,00">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="rendimentos">Rendimentos financeiros (tributação exclusiva na fonte)</label>
-                            <input type="text" id="rendimentos" class="calc-input" placeholder="R$ 0,00" value="R$ 0,00">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="ganho">Ganho de capital (tributável)</label>
-                            <input type="text" id="ganho" class="calc-input" placeholder="R$ 0,00" value="R$ 0,00">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="dividendos">Dividendos/Lucros recebidos</label>
-                            <input type="text" id="dividendos" class="calc-input" placeholder="R$ 0,00" value="R$ 0,00">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="isentos">Rendimentos isentos / não tributáveis</label>
-                            <input type="text" id="isentos" class="calc-input" placeholder="R$ 0,00" value="R$ 0,00">
-                        </div>
-                    </div>
-
-                    <!-- SEÇÃO REGRAS DO CÁLCULO -->
-                    <div class="section">
-                        <div class="section-title">Regras do Cálculo</div>
-
-                        <div class="checkbox-group">
-                            <input type="checkbox" id="checkIsentos">
-                            <label for="checkIsentos" class="checkbox-label">Incluir rendimentos isentos no cálculo do mínimo</label>
-                        </div>
-
-                        <div class="checkbox-group">
-                            <input type="checkbox" id="checkExclusiva">
-                            <label for="checkExclusiva" class="checkbox-label">Incluir rendimentos exclusivamente na fonte no cálculo do mínimo</label>
-                        </div>
-                    </div>
-
-                    <!-- SEÇÃO RETENÇÕES -->
-                    <div class="section">
-                        <div class="form-group">
-                            <label for="retencoes">Retenções já pagas no ano (R$)</label>
-                            <input type="text" id="retencoes" class="calc-input" placeholder="R$ 0,00" value="R$ 0,00">
-                        </div>
-                    </div>
-
-                    <!-- BOTÃO CALCULAR -->
-                    <button type="button" class="calc-button" onclick="calcularDetalhado()">Calcular</button>
-                </form>
-
-                <!-- SEÇÃO RESULTADOS -->
-                <div class="calc-results" id="resultsSection">
-                    <div class="result-item">
-                        <span class="result-label">Renda total informada</span>
-                        <span class="result-value" id="rendaTotal">R$ 0,00</span>
-                    </div>
-
-                    <div class="result-item">
-                        <span class="result-label">Base considerada para imposto mínimo</span>
-                        <span class="result-value" id="baseMinimo">R$ 0,00</span>
-                    </div>
-
-                    <div id="statusAbaixo" class="status-below" style="display: none;">
-                        Base abaixo do piso mínimo de R$ 600.000,00
-                    </div>
-
-                    <div id="resultadosCalculados" style="display: none;">
-                        <div class="result-item">
-                            <span class="result-label">Alíquota mínima</span>
-                            <span class="result-value"><span class="aliquota-value" id="aliquota">0,000%</span></span>
-                        </div>
-
-                        <div class="result-item">
-                            <span class="result-label">Imposto mínimo</span>
-                            <span class="result-value"><span class="imposto-value" id="impostoMin">R$ 0,00</span></span>
-                        </div>
-
-                        <div class="result-item">
-                            <span class="result-label">Imposto estimado a pagar após retenções</span>
-                            <span class="result-value"><span class="imposto-value" id="impostoPagar">R$ 0,00</span></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="close-calculator">
-                    <button onclick="fecharCalculadora()">Fechar Calculadora</button>
-                </div>
-            </div>
+    <!-- MODO BÁSICO -->
+    <div class="mode-panel active" id="panel-basico">
+        <div class="field">
+            <label for="renda-total">Renda Total Anual (R$)</label>
+            <span class="sublabel">Soma de todos os rendimentos (tributáveis + dividendos + investimentos tributáveis). Não inclua poupança, LCI, LCA, FIIs, Fiagro, heranças.</span>
+            <input type="text" id="renda-total" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off">
+        </div>
+        <div class="field">
+            <label for="ir-pago">IR Já Pago no Ano (R$)</label>
+            <span class="sublabel">Soma do IRPF retido na fonte + IR sobre investimentos tributáveis.</span>
+            <input type="text" id="ir-pago" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off">
         </div>
     </div>
 
-    <script>
-        // ========== CALCULADORA SIMPLES ==========
-        document.getElementById('calcular').addEventListener('click', () => {
-          const rendaInput = document.getElementById('renda-anual');
-          const impostoElement = document.getElementById('imposto');
-          const aliquotaElement = document.getElementById('aliquota');
-          const bubbles = document.querySelectorAll('.bubble');
-          const resultSection = document.getElementById('result-section');
-          const resultCaptionLeft = document.getElementById('result-caption-left');
-          const resultCaptionRight = document.getElementById('result-caption-right');
-          const highlight2 = document.querySelectorAll('.highlight_2');
+    <!-- MODO AVANÇADO -->
+    <div class="mode-panel" id="panel-avancado">
+        <p class="section-label">Rendimentos incluídos na base</p>
 
-          let rendaValue = rendaInput.value.replace(/\./g, ''); 
-          rendaValue = rendaValue.replace(',', '.');
-          rendaValue = parseFloat(rendaValue.replace(/[^\d.]/g, ''));
+        <div class="field">
+            <label for="salarios">Salários / CLT (R$)</label>
+            <span class="sublabel">Rendimentos anuais brutos do trabalho assalariado.</span>
+            <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="salarios">
+        </div>
+        <div class="field">
+            <label for="prolabore">Pró-labore (R$)</label>
+            <span class="sublabel">Retiradas como sócio/administrador.</span>
+            <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="prolabore">
+        </div>
+        <div class="field">
+            <label for="dividendos">Dividendos e Lucros (R$)</label>
+            <span class="sublabel">Distribuição de lucros recebida no ano (todos os valores, inclusive &lt; R$ 50 mil/mês).</span>
+            <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="dividendos">
+        </div>
+        <div class="field">
+            <label for="alugueis">Aluguéis recebidos (R$)</label>
+            <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="alugueis">
+        </div>
+        <div class="field">
+            <label for="renda-fixa">CDB, Fundos, Renda Fixa tributável (R$)</label>
+            <span class="sublabel">CDB, fundos comuns, debêntures não incentivadas.</span>
+            <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="renda-fixa">
+        </div>
+        <div class="field">
+            <label for="acoes">Ações / Bolsa (R$)</label>
+            <span class="sublabel">Ganhos tributáveis em operações de bolsa.</span>
+            <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="acoes">
+        </div>
+        <div class="field">
+            <label for="outros">Outros rendimentos tributáveis (R$)</label>
+            <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="outros">
+        </div>
 
-          rendaInput.classList.remove('valid', 'invalid');
-          bubbles.forEach(bubble => bubble.classList.remove('valid', 'invalid'));
-          rendaInput.placeholder = "R$ 0,00";
-          resultSection.classList.remove('invalid');
-          resultCaptionLeft.classList.remove('invalid');
-          resultCaptionRight.classList.remove('invalid');
-          highlight2.forEach(el => el.classList.remove('invalid'));
+        <p class="section-label" style="margin-top:32px">IR já pago (compensável)</p>
 
-          if (isNaN(rendaValue) || rendaValue < 600000) {
-            rendaInput.classList.add('invalid');
-            rendaInput.value = "";
-            rendaInput.placeholder = "    DEVE SER ACIMA DE R$ 600 MIL";
-            bubbles.forEach(bubble => bubble.classList.add('invalid'));
-            resultSection.classList.add('invalid');
-            resultCaptionLeft.classList.add('invalid');
-            resultCaptionRight.classList.add('invalid');
-            aliquotaElement.textContent = ""
-            impostoElement.textContent = ""
-            highlight2.forEach(el => el.classList.add('invalid'));
-            return;
-          }
+        <div class="field">
+            <label for="irrf">IR Retido na Fonte — IRRF (R$)</label>
+            <span class="sublabel">Sobre salários, pró-labore, aluguéis.</span>
+            <input type="text" class="input-ir" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="irrf">
+        </div>
+        <div class="field">
+            <label for="ir-invest">IR sobre Investimentos (R$)</label>
+            <span class="sublabel">IR retido em CDB, fundos, ações, etc.</span>
+            <input type="text" class="input-ir" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="ir-invest">
+        </div>
 
-          rendaInput.classList.add('valid');
-          bubbles.forEach(bubble => bubble.classList.add('valid'));
+        <div class="info-box">
+            <h3>Rendimentos excluídos da base IRPFM</h3>
+            <ul>
+                <li>Poupança</li>
+                <li>LCI / LCA</li>
+                <li>CRI / CRA</li>
+                <li>FIIs / Fiagro</li>
+                <li>Heranças e doações</li>
+                <li>Indenizações por doença grave</li>
+                <li>Ganho de capital (venda de imóvel fora de bolsa)</li>
+                <li>Aluguéis atrasados via ação judicial (RRA)</li>
+            </ul>
+        </div>
+    </div>
 
-          let al_minima = Math.min(((rendaValue - 600000) / 600000) * 0.10, 0.10);
-          const imposto_minimo = rendaValue * al_minima;
-          const al_minima_porcentagem = al_minima * 100;
+    <!-- RESULTADOS -->
+    <div class="results">
+        <p class="results-title">Resultado da Simulação</p>
 
-          impostoElement.textContent = `R$ ${imposto_minimo.toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.')}`;
-          aliquotaElement.textContent = `${al_minima_porcentagem.toFixed(3)}%`;
-          resultSection.classList.remove('invalid');
-          resultSection.classList.add('valid');
+        <div class="gauge-container">
+            <div class="gauge-header">
+                <span class="gauge-label">Alíquota IRPFM</span>
+                <span class="gauge-value" id="res-aliquota-pct">0,00%</span>
+            </div>
+            <div class="gauge-track">
+                <div class="gauge-fill" id="gauge-fill"></div>
+            </div>
+            <div class="gauge-ticks">
+                <span>0%</span>
+                <span>2%</span>
+                <span>4%</span>
+                <span>6%</span>
+                <span>8%</span>
+                <span>10%</span>
+            </div>
+        </div>
+
+        <div class="result-row">
+            <span class="label">Renda Total Anual</span>
+            <span class="value" id="res-renda">R$ 0,00</span>
+        </div>
+        <div class="result-row">
+            <span class="label">Alíquota IRPFM</span>
+            <span class="value" id="res-aliquota">0,00%</span>
+        </div>
+        <div class="result-row">
+            <span class="label">Imposto Mínimo Bruto</span>
+            <span class="value" id="res-bruto">R$ 0,00</span>
+        </div>
+        <div class="result-row">
+            <span class="label">IR Já Compensado</span>
+            <span class="value" id="res-compensado">R$ 0,00</span>
+        </div>
+
+        <div class="result-main">
+            <span class="label">IRPFM a Pagar</span>
+            <span class="value" id="res-pagar">R$ 0,00</span>
+        </div>
+
+        <div id="status-container"></div>
+    </div>
+
+    <div class="legal-footer">
+        <strong>Base legal:</strong> Lei nº 15.270/2025 (Reforma da Renda). O IRPFM será apurado na Declaração de Ajuste Anual a partir do exercício 2027 (ano-calendário 2026). Esta calculadora é uma ferramenta de simulação e não substitui orientação contábil profissional. Cerca de 141 mil contribuintes são afetados pela medida, segundo estimativa do Governo Federal.
+    </div>
+</main>
+
+<script>
+(function () {
+    'use strict';
+
+    // --- Máscara monetária ---
+    function parseBRL(str) {
+        if (!str) return 0;
+        var clean = str.replace(/[^\d,]/g, '').replace(',', '.');
+        return parseFloat(clean) || 0;
+    }
+
+    function formatBRL(value) {
+        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function maskMoney(input) {
+        input.addEventListener('input', function () {
+            var raw = input.value.replace(/\D/g, '');
+            if (raw === '') { input.value = ''; recalc(); return; }
+            var num = parseInt(raw, 10) / 100;
+            input.value = num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            recalc();
         });
+    }
 
-        document.getElementById('renda-anual').addEventListener('input', (event) => {
-          let value = event.target.value.replace(/\D/g, '');
-          value = (value / 100).toFixed(2) + '';
-          value = value.replace('.', ',');
-          value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-          event.target.value = '    R$ ' + value;
+    // --- Tabs ---
+    var tabs = document.querySelectorAll('.tab');
+    var panels = document.querySelectorAll('.mode-panel');
+
+    tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+            tabs.forEach(function (t) { t.classList.remove('active'); });
+            panels.forEach(function (p) { p.classList.remove('active'); });
+            tab.classList.add('active');
+            document.getElementById('panel-' + tab.dataset.mode).classList.add('active');
+            recalc();
         });
+    });
 
-        // ========== CALCULADORA AVANÇADA ==========
-        function abrirCalculadora() {
-            const calcDiv = document.getElementById('calculator-detailed');
-            calcDiv.classList.add('visible');
-            setTimeout(() => {
-                document.getElementById('calculator-detailed').scrollIntoView({ behavior: 'smooth' });
-            }, 100);
+    // --- Init masks ---
+    document.querySelectorAll('input[type="text"]').forEach(maskMoney);
+
+    // --- Cálculo ---
+    function getActiveMode() {
+        return document.querySelector('.tab.active').dataset.mode;
+    }
+
+    function getValues() {
+        var mode = getActiveMode();
+        var rendaTotal, irPago;
+
+        if (mode === 'basico') {
+            rendaTotal = parseBRL(document.getElementById('renda-total').value);
+            irPago = parseBRL(document.getElementById('ir-pago').value);
+        } else {
+            rendaTotal =
+                parseBRL(document.getElementById('salarios').value) +
+                parseBRL(document.getElementById('prolabore').value) +
+                parseBRL(document.getElementById('dividendos').value) +
+                parseBRL(document.getElementById('alugueis').value) +
+                parseBRL(document.getElementById('renda-fixa').value) +
+                parseBRL(document.getElementById('acoes').value) +
+                parseBRL(document.getElementById('outros').value);
+
+            irPago =
+                parseBRL(document.getElementById('irrf').value) +
+                parseBRL(document.getElementById('ir-invest').value);
         }
 
-        function fecharCalculadora() {
-            document.getElementById('calculator-detailed').classList.remove('visible');
-            document.getElementById('resultsSection').classList.remove('visible');
-            resetarCalculadora();
+        return { rendaTotal: rendaTotal, irPago: irPago };
+    }
+
+    function calcIRPFM(rendaTotal) {
+        if (rendaTotal <= 600000) return 0;
+        if (rendaTotal >= 1200000) return 10;
+        return (rendaTotal / 60000) - 10;
+    }
+
+    function recalc() {
+        var v = getValues();
+        var aliquota = calcIRPFM(v.rendaTotal);
+        var bruto = (aliquota / 100) * v.rendaTotal;
+        var pagar = Math.max(0, bruto - v.irPago);
+
+        // Gauge
+        var pct = Math.min(aliquota, 10);
+        document.getElementById('gauge-fill').style.width = (pct / 10 * 100) + '%';
+        document.getElementById('res-aliquota-pct').textContent = aliquota.toFixed(2).replace('.', ',') + '%';
+
+        // Rows
+        document.getElementById('res-renda').textContent = formatBRL(v.rendaTotal);
+        document.getElementById('res-aliquota').textContent = aliquota.toFixed(2).replace('.', ',') + '%';
+        document.getElementById('res-bruto').textContent = formatBRL(bruto);
+        document.getElementById('res-compensado').textContent = formatBRL(v.irPago);
+        document.getElementById('res-pagar').textContent = pagar > 0 ? formatBRL(pagar) : 'Nada a pagar';
+
+        // Status tag
+        var container = document.getElementById('status-container');
+        container.innerHTML = '';
+        var tag = document.createElement('span');
+        tag.className = 'status-tag';
+
+        if (v.rendaTotal <= 600000) {
+            tag.classList.add('green');
+            tag.textContent = 'ISENTO — Renda abaixo de R$ 600 mil';
+        } else if (pagar === 0) {
+            tag.classList.add('green');
+            tag.textContent = 'IR JÁ PAGO COBRE O MÍNIMO';
+        } else {
+            tag.classList.add('orange');
+            tag.textContent = 'IRPFM A PAGAR: ' + formatBRL(pagar);
         }
 
-        function resetarCalculadora() {
-            document.getElementById('salario').value = 'R$ 0,00';
-            document.getElementById('alugueis').value = 'R$ 0,00';
-            document.getElementById('rendimentos').value = 'R$ 0,00';
-            document.getElementById('ganho').value = 'R$ 0,00';
-            document.getElementById('dividendos').value = 'R$ 0,00';
-            document.getElementById('isentos').value = 'R$ 0,00';
-            document.getElementById('retencoes').value = 'R$ 0,00';
-            document.getElementById('checkIsentos').checked = false;
-            document.getElementById('checkExclusiva').checked = false;
-        }
+        container.appendChild(tag);
+    }
 
-        function formatarMoeda(valor) {
-            if (isNaN(valor) || valor === null) valor = 0;
-            return new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }).format(valor);
-        }
+    // Cálculo inicial
+    recalc();
+})();
+</script>
 
-        function extrairNumero(texto) {
-            if (typeof texto !== 'string') return 0;
-            const numStr = texto.replace(/[^\d,-]/g, '').replace('.', '').replace(',', '.');
-            const num = parseFloat(numStr);
-            return isNaN(num) ? 0 : num;
-        }
-
-        function formatarMoedaInput(digitos) {
-            if (!digitos || digitos === '') return '';
-            digitos = digitos.replace(/^0+/, '') || '0';
-            while (digitos.length < 3) {
-                digitos = '0' + digitos;
-            }
-            const inteiros = digitos.slice(0, -2);
-            const centavos = digitos.slice(-2);
-            const integrosFormatado = inteiros.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            return 'R$ ' + integrosFormatado + ',' + centavos;
-        }
-
-        const camposMoeda = ['salario', 'alugueis', 'rendimentos', 'ganho', 'dividendos', 'isentos', 'retencoes'];
-        camposMoeda.forEach(id => {
-            const input = document.getElementById(id);
-            
-            input.addEventListener('focus', function() {
-                const valor = extrairNumero(this.value);
-                if (valor === 0) {
-                    this.value = '';
-                } else {
-                    this.select();
-                }
-            });
-            
-            input.addEventListener('input', function() {
-                let digitos = this.value.replace(/\D/g, '');
-                if (digitos.length > 0) {
-                    this.value = formatarMoedaInput(digitos);
-                }
-            });
-            
-            input.addEventListener('blur', function() {
-                if (this.value.trim() === '' || extrairNumero(this.value) === 0) {
-                    this.value = 'R$ 0,00';
-                }
-            });
-        });
-
-        function calcularDetalhado() {
-            // Captura dos dados (Entradas)
-            const salario = extrairNumero(document.getElementById('salario').value);
-            const alugueis = extrairNumero(document.getElementById('alugueis').value);
-            const ganhoCapital = extrairNumero(document.getElementById('ganho').value);
-            const rendFinanceiros = extrairNumero(document.getElementById('rendimentos').value);
-            const dividendos = extrairNumero(document.getElementById('dividendos').value);
-            const rendIsentos = extrairNumero(document.getElementById('isentos').value);
-            const retencoesPagas = extrairNumero(document.getElementById('retencoes').value);
-
-            const incluirIsentos = document.getElementById('checkIsentos').checked;
-            const incluirExclusivos = document.getElementById('checkExclusiva').checked;
-
-            // Calculo da renda total (todos os rendimentos)
-            const rendaTotal = salario + alugueis + rendFinanceiros + ganhoCapital + dividendos + rendIsentos;
-
-            // Calculo da base (Correcao aplicada aqui)
-            let baseCalculo = salario + alugueis + ganhoCapital;
-
-            if (incluirIsentos) {
-                baseCalculo += (dividendos + rendIsentos);
-            }
-
-            if (incluirExclusivos) {
-                // CORRECAO: Agora soma os rendimentos financeiros se o check estiver marcado
-                baseCalculo += rendFinanceiros;
-            }
-
-            // Exibir renda total e base
-            document.getElementById('rendaTotal').textContent = formatarMoeda(rendaTotal);
-            document.getElementById('baseMinimo').textContent = formatarMoeda(baseCalculo);
-            document.getElementById('resultsSection').classList.add('visible');
-
-            // Calculo da aliquota (Regra da Rampa 600k - 1.2M)
-            let aliquota = 0;
-
-            if (baseCalculo <= 600000) {
-                // Abaixo de 600k anuais: Isento do minimo
-                aliquota = 0;
-            } else if (baseCalculo >= 1200000) {
-                // Acima de 1.2M anuais: Teto de 10%
-                aliquota = 0.10;
-            } else {
-                // Entre 600k e 1.2M: Calculo progressivo
-                // Formula: (Base - 600.000) / 600.000 * 10%
-                aliquota = ((baseCalculo - 600000) / 600000) * 0.10;
-            }
-
-            // Apuracao final
-            const impostoMinimoDevido = baseCalculo * aliquota;
-            let saldoPagar = impostoMinimoDevido - retencoesPagas;
-
-            // Nao existe imposto negativo
-            if (saldoPagar < 0) saldoPagar = 0;
-
-            // Exibicao dos resultados
-            if (baseCalculo < 600000) {
-                document.getElementById('statusAbaixo').style.display = 'block';
-                document.getElementById('resultadosCalculados').style.display = 'none';
-            } else {
-                document.getElementById('statusAbaixo').style.display = 'none';
-                document.getElementById('resultadosCalculados').style.display = 'block';
-
-                document.getElementById('aliquota').textContent = (aliquota * 100).toFixed(3) + '%';
-                document.getElementById('impostoMin').textContent = formatarMoeda(impostoMinimoDevido);
-                document.getElementById('impostoPagar').textContent = formatarMoeda(saldoPagar);
-            }
-        }
-
-        document.getElementById('calculatorForm').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                calcularDetalhado();
-            }
-        });
-
-        // ========== FUNCOES DE AUTENTICACAO ==========
-        function abrirModalAutenticacao() {
-            document.getElementById('authModal').classList.add('visible');
-            document.getElementById('authEmail').focus();
-            document.getElementById('authErrorMessage').classList.remove('visible');
-            document.getElementById('authDeniedMessage').classList.remove('visible');
-            document.getElementById('authEmail').classList.remove('error');
-            document.getElementById('authEmail').value = '';
-        }
-
-        function fecharModalAutenticacao() {
-            document.getElementById('authModal').classList.remove('visible');
-            document.getElementById('authEmail').value = '';
-            document.getElementById('authErrorMessage').classList.remove('visible');
-            document.getElementById('authDeniedMessage').classList.remove('visible');
-            document.getElementById('authEmail').classList.remove('error');
-        }
-
-        function validarEmailAutenticacao() {
-            const email = document.getElementById('authEmail').value.trim();
-            const emailInput = document.getElementById('authEmail');
-            const errorMessage = document.getElementById('authErrorMessage');
-            const deniedMessage = document.getElementById('authDeniedMessage');
-
-            // Limpar mensagens de erro
-            errorMessage.classList.remove('visible');
-            deniedMessage.classList.remove('visible');
-            emailInput.classList.remove('error');
-
-            // Validar se email nao esta vazio
-            if (!email) {
-                emailInput.classList.add('error');
-                errorMessage.classList.add('visible');
-                return;
-            }
-
-            // Validar dominio do email
-            const dominiosValidos = ['@soutocorrea.com.br', '@soutocorrea.com'];
-            const emailValido = dominiosValidos.some(dominio => email.toLowerCase().endsWith(dominio));
-
-            if (!emailValido) {
-                emailInput.classList.add('error');
-                deniedMessage.classList.add('visible');
-                return;
-            }
-
-            // Email valido - abrir calculadora
-            fecharModalAutenticacao();
-            abrirCalculadora();
-        }
-
-        // Permitir Enter no campo de email
-        document.getElementById('authEmail').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                validarEmailAutenticacao();
-            }
-        });
-
-        // Fechar modal ao clicar fora
-        document.getElementById('authModal').addEventListener('click', function(event) {
-            if (event.target === this) {
-                fecharModalAutenticacao();
-            }
-        });
-    </script>
 </body>
 </html>
