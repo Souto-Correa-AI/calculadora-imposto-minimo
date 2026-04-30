@@ -153,6 +153,57 @@
             color: #b5ada5;
         }
 
+        .field select {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-family: inherit;
+            border: 1px solid #C1B39F;
+            border-radius: 0;
+            background: #FFF;
+            color: #000;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.15s;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3e%3cpath fill='%23635C54' d='M6 8L0 0h12z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+
+        .field select:focus {
+            border-color: #FF5527;
+        }
+
+        /* SUBFIELD (origem dos dividendos) */
+        .subfield {
+            margin-top: -8px;
+            margin-bottom: 18px;
+            padding: 12px 14px;
+            background: #FFF;
+            border-left: 3px solid #FF5527;
+        }
+
+        .subfield label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .subfield .sublabel {
+            display: block;
+            font-size: 11px;
+            color: #635C54;
+            margin-bottom: 8px;
+            line-height: 1.45;
+        }
+
         /* INFO BOX */
         .info-box {
             background: #FFF;
@@ -427,6 +478,18 @@
             <span class="sublabel">Distribuição de lucros recebida no ano (todos os valores, inclusive &lt; R$ 50 mil/mês).</span>
             <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="dividendos">
         </div>
+
+        <div class="subfield">
+            <label for="regime-pj">Origem dos dividendos — regime tributário da PJ pagadora <span style="font-weight:400; text-transform:none; letter-spacing:0; color:#635C54;">(opcional)</span></label>
+            <span class="sublabel">Aplica o <strong>redutor de dupla tributação</strong> da Lei 15.270/2025: a soma da alíquota nominal IRPJ+CSLL da empresa que distribuiu os dividendos com a alíquota efetiva do IRPFM não pode ultrapassar 34% (regra geral), 40% (instituição financeira não bancária) ou 45% (banco). O excesso é descontado do IRPFM proporcionalmente aos dividendos recebidos.</span>
+            <select id="regime-pj">
+                <option value="nenhum">Não informar — sem redutor (cálculo conservador)</option>
+                <option value="lucro-real">Lucro Real — geral (PJ 34% / teto combinado 34%)</option>
+                <option value="if-nao-banco">Instituição financeira não bancária (PJ 40% / teto 40%)</option>
+                <option value="banco">Banco / cooperativa de crédito (PJ 45% / teto 45%)</option>
+                <option value="presumido-simples">Lucro Presumido ou Simples Nacional — sem redutor</option>
+            </select>
+        </div>
         <div class="field">
             <label for="alugueis">Aluguéis recebidos (R$)</label>
             <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="alugueis">
@@ -508,6 +571,22 @@
             <span class="label">Imposto Mínimo Bruto</span>
             <span class="value" id="res-bruto">R$ 0,00</span>
         </div>
+        <div class="result-row" id="row-aliq-pj" style="display:none">
+            <span class="label">Alíquota nominal PJ pagadora</span>
+            <span class="value" id="res-aliq-pj">0,00%</span>
+        </div>
+        <div class="result-row" id="row-soma" style="display:none">
+            <span class="label">Soma PJ + IRPFM (sobre dividendos)</span>
+            <span class="value" id="res-soma">0,00%</span>
+        </div>
+        <div class="result-row" id="row-redutor" style="display:none">
+            <span class="label">Redutor de dupla tributação</span>
+            <span class="value" id="res-redutor">R$ 0,00</span>
+        </div>
+        <div class="result-row" id="row-aliq-comb" style="display:none">
+            <span class="label">Alíquota efetiva combinada (PJ + IRPFM)</span>
+            <span class="value" id="res-aliq-comb">0,00%</span>
+        </div>
         <div class="result-row">
             <span class="label">IR Já Compensado</span>
             <span class="value" id="res-compensado">R$ 0,00</span>
@@ -568,23 +647,42 @@
     // --- Init masks ---
     document.querySelectorAll('input[type="text"]').forEach(maskMoney);
 
+    // --- Listener do dropdown de regime PJ ---
+    var regimeSel = document.getElementById('regime-pj');
+    if (regimeSel) {
+        regimeSel.addEventListener('change', recalc);
+    }
+
     // --- Cálculo ---
     function getActiveMode() {
         return document.querySelector('.tab.active').dataset.mode;
     }
 
+    function getRegimeData() {
+        var sel = document.getElementById('regime-pj');
+        if (!sel) return null;
+        switch (sel.value) {
+            case 'lucro-real':    return { aliqPJ: 34, teto: 34, label: 'Lucro Real' };
+            case 'if-nao-banco':  return { aliqPJ: 40, teto: 40, label: 'Instituição financeira não bancária' };
+            case 'banco':         return { aliqPJ: 45, teto: 45, label: 'Banco / cooperativa de crédito' };
+            default:              return null;
+        }
+    }
+
     function getValues() {
         var mode = getActiveMode();
-        var rendaTotal, irPago;
+        var rendaTotal, irPago, dividendos = 0;
 
         if (mode === 'basico') {
             rendaTotal = parseBRL(document.getElementById('renda-total').value);
             irPago = parseBRL(document.getElementById('ir-pago').value);
         } else {
+            dividendos = parseBRL(document.getElementById('dividendos').value);
+
             rendaTotal =
                 parseBRL(document.getElementById('salarios').value) +
                 parseBRL(document.getElementById('prolabore').value) +
-                parseBRL(document.getElementById('dividendos').value) +
+                dividendos +
                 parseBRL(document.getElementById('alugueis').value) +
                 parseBRL(document.getElementById('renda-fixa').value) +
                 parseBRL(document.getElementById('acoes').value) +
@@ -595,7 +693,7 @@
                 parseBRL(document.getElementById('ir-invest').value);
         }
 
-        return { rendaTotal: rendaTotal, irPago: irPago };
+        return { rendaTotal: rendaTotal, irPago: irPago, dividendos: dividendos };
     }
 
     function calcIRPFM(rendaTotal) {
@@ -604,25 +702,79 @@
         return (rendaTotal / 60000) - 10;
     }
 
+    function fmtPct(x) {
+        return x.toFixed(2).replace('.', ',') + '%';
+    }
+
     function recalc() {
         var v = getValues();
         var aliquota = calcIRPFM(v.rendaTotal);
         var bruto = (aliquota / 100) * v.rendaTotal;
-        var pagar = Math.max(0, bruto - v.irPago);
 
-        // Gauge
+        // --- Redutor de dupla tributação (Lei 15.270/2025) ---
+        // Aplica-se apenas no Modo Avançado, com regime informado e dividendos > 0.
+        // Fórmula: se (aliqPJ + aliqIRPFM) > teto, redutor = (excesso) × dividendos,
+        // limitado à parcela do IRPFM atribuível aos dividendos (aliqIRPFM × dividendos).
+        var regime = (getActiveMode() === 'avancado') ? getRegimeData() : null;
+        var redutor = 0;
+        var soma = 0;
+        var aliqCombFinal = 0;
+
+        if (regime && v.dividendos > 0) {
+            soma = regime.aliqPJ + aliquota;
+            if (soma > regime.teto) {
+                var excessoPct = soma - regime.teto;
+                var maxRedutor = (aliquota / 100) * v.dividendos;
+                redutor = Math.min(maxRedutor, (excessoPct / 100) * v.dividendos);
+            }
+            // Alíquota efetiva combinada sobre os dividendos, após o redutor
+            var irpfmDividendosLiquido = (aliquota / 100) * v.dividendos - redutor;
+            aliqCombFinal = regime.aliqPJ + (irpfmDividendosLiquido / v.dividendos) * 100;
+        }
+
+        var brutoFinal = bruto - redutor;
+        var pagar = Math.max(0, brutoFinal - v.irPago);
+
+        // --- Gauge ---
         var pct = Math.min(aliquota, 10);
         document.getElementById('gauge-fill').style.width = (pct / 10 * 100) + '%';
-        document.getElementById('res-aliquota-pct').textContent = aliquota.toFixed(2).replace('.', ',') + '%';
+        document.getElementById('res-aliquota-pct').textContent = fmtPct(aliquota);
 
-        // Rows
+        // --- Linhas de resultado básicas ---
         document.getElementById('res-renda').textContent = formatBRL(v.rendaTotal);
-        document.getElementById('res-aliquota').textContent = aliquota.toFixed(2).replace('.', ',') + '%';
+        document.getElementById('res-aliquota').textContent = fmtPct(aliquota);
         document.getElementById('res-bruto').textContent = formatBRL(bruto);
         document.getElementById('res-compensado').textContent = formatBRL(v.irPago);
         document.getElementById('res-pagar').textContent = pagar > 0 ? formatBRL(pagar) : 'Nada a pagar';
 
-        // Status tag
+        // --- Linhas de resultado do redutor (visíveis só quando aplicável) ---
+        var rowAliqPJ   = document.getElementById('row-aliq-pj');
+        var rowSoma     = document.getElementById('row-soma');
+        var rowRedutor  = document.getElementById('row-redutor');
+        var rowAliqComb = document.getElementById('row-aliq-comb');
+
+        if (regime && v.dividendos > 0 && aliquota > 0) {
+            rowAliqPJ.style.display = '';
+            rowSoma.style.display = '';
+            rowAliqComb.style.display = '';
+            document.getElementById('res-aliq-pj').textContent = fmtPct(regime.aliqPJ);
+            document.getElementById('res-soma').textContent = fmtPct(soma);
+            document.getElementById('res-aliq-comb').textContent = fmtPct(aliqCombFinal);
+
+            if (redutor > 0) {
+                rowRedutor.style.display = '';
+                document.getElementById('res-redutor').textContent = '− ' + formatBRL(redutor);
+            } else {
+                rowRedutor.style.display = 'none';
+            }
+        } else {
+            rowAliqPJ.style.display = 'none';
+            rowSoma.style.display = 'none';
+            rowRedutor.style.display = 'none';
+            rowAliqComb.style.display = 'none';
+        }
+
+        // --- Status tag ---
         var container = document.getElementById('status-container');
         container.innerHTML = '';
         var tag = document.createElement('span');
@@ -633,13 +785,26 @@
             tag.textContent = 'ISENTO — Renda abaixo de R$ 600 mil';
         } else if (pagar === 0) {
             tag.classList.add('green');
-            tag.textContent = 'IR JÁ PAGO COBRE O MÍNIMO';
+            tag.textContent = redutor > 0
+                ? 'IR JÁ PAGO + REDUTOR COBREM O MÍNIMO'
+                : 'IR JÁ PAGO COBRE O MÍNIMO';
         } else {
             tag.classList.add('orange');
             tag.textContent = 'IRPFM A PAGAR: ' + formatBRL(pagar);
         }
 
         container.appendChild(tag);
+
+        // Mensagem secundária quando o redutor está ativo
+        if (redutor > 0) {
+            var note = document.createElement('div');
+            note.style.cssText = 'margin-top:10px; font-size:12px; color:#635C54; line-height:1.5;';
+            note.innerHTML = 'O <strong>redutor de dupla tributação</strong> reduziu o IRPFM em <strong>' +
+                formatBRL(redutor) + '</strong> para que a soma da tributação da PJ (' +
+                fmtPct(regime.aliqPJ) + ') com a alíquota efetiva do IRPFM sobre os dividendos não ultrapasse o teto de ' +
+                fmtPct(regime.teto) + '.';
+            container.appendChild(note);
+        }
     }
 
     // Cálculo inicial
