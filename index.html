@@ -204,6 +204,177 @@
             line-height: 1.45;
         }
 
+        .subfield .pj-effective-fields {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px dashed #d8d0c5;
+            display: none;
+        }
+
+        .subfield .pj-effective-fields.visible {
+            display: block;
+        }
+
+        .subfield .field-pair {
+            margin-bottom: 10px;
+        }
+
+        .subfield .field-pair:last-child {
+            margin-bottom: 0;
+        }
+
+        .subfield .field-pair label {
+            display: block;
+            text-transform: none;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0;
+            color: #1a1a1a;
+            margin-bottom: 2px;
+        }
+
+        .subfield .field-pair .sublabel {
+            display: block;
+            font-size: 11px;
+            color: #635C54;
+            margin-bottom: 4px;
+        }
+
+        .subfield .field-pair input {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 14px;
+            font-family: inherit;
+            border: 1px solid #C1B39F;
+            border-radius: 0;
+            background: #FFF;
+            color: #000;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .subfield .field-pair input:focus {
+            border-color: #FF5527;
+        }
+
+        /* INPUT PAIR — valor + alíquota efetiva por linha */
+        .input-pair {
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-pair .input-renda {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .input-pair .input-aliq {
+            flex: 0 0 120px;
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .input-pair .input-aliq::placeholder {
+            font-size: 12px;
+            color: #b5ada5;
+        }
+
+        @media (max-width: 520px) {
+            .input-pair .input-aliq {
+                flex: 0 0 96px;
+            }
+        }
+
+        /* DILUTION SECTION */
+        .dilution-section {
+            margin-top: 24px;
+            padding: 14px 16px;
+            background: #FFF;
+            border-left: 3px solid #C1B39F;
+            display: none;
+        }
+
+        .dilution-section.visible {
+            display: block;
+        }
+
+        .dilution-section h4 {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #635C54;
+            margin-bottom: 4px;
+        }
+
+        .dilution-section .dilution-help {
+            font-size: 11px;
+            color: #635C54;
+            line-height: 1.45;
+            margin-bottom: 10px;
+        }
+
+        .dilution-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .dilution-table th,
+        .dilution-table td {
+            padding: 6px 4px;
+            text-align: right;
+            border-bottom: 1px solid #efe9e2;
+        }
+
+        .dilution-table th {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #635C54;
+            border-bottom: 1px solid #c1b39f;
+        }
+
+        .dilution-table th:first-child,
+        .dilution-table td:first-child {
+            text-align: left;
+        }
+
+        .dilution-table td.line-name {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .dilution-table tr.dilution-total td {
+            border-bottom: none;
+            border-top: 2px solid #1a1a1a;
+            padding-top: 8px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .dilution-summary {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+        }
+
+        .dilution-summary .label { color: #635C54; }
+        .dilution-summary .value { color: #000; font-weight: 600; }
+
+        .dilution-summary.highlight {
+            border-top: 1px solid #e0dbd5;
+            margin-top: 4px;
+            padding-top: 10px;
+        }
+
+        .dilution-summary.highlight .value {
+            color: #FF5527;
+        }
+
         /* INFO BOX */
         .info-box {
             background: #FFF;
@@ -465,13 +636,19 @@
 
         <div class="field">
             <label for="salarios">Salários / CLT (R$)</label>
-            <span class="sublabel">Rendimentos anuais brutos do trabalho assalariado.</span>
-            <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="salarios">
+            <span class="sublabel">Rendimentos anuais brutos do trabalho assalariado. À direita, a <strong>alíquota efetiva</strong> total que já incidiu sobre essa linha (opcional, usada na análise de diluição).</span>
+            <div class="input-pair">
+                <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="salarios">
+                <input type="text" class="input-aliq" inputmode="decimal" placeholder="Alíq. efet." autocomplete="off" id="aliq-salarios" aria-label="Alíquota efetiva sobre salários">
+            </div>
         </div>
         <div class="field">
             <label for="prolabore">Pró-labore (R$)</label>
             <span class="sublabel">Retiradas como sócio/administrador.</span>
-            <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="prolabore">
+            <div class="input-pair">
+                <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="prolabore">
+                <input type="text" class="input-aliq" inputmode="decimal" placeholder="Alíq. efet." autocomplete="off" id="aliq-prolabore" aria-label="Alíquota efetiva sobre pró-labore">
+            </div>
         </div>
         <div class="field">
             <label for="dividendos">Dividendos e Lucros (R$)</label>
@@ -481,32 +658,57 @@
 
         <div class="subfield">
             <label for="regime-pj">Origem dos dividendos — regime tributário da PJ pagadora <span style="font-weight:400; text-transform:none; letter-spacing:0; color:#635C54;">(opcional)</span></label>
-            <span class="sublabel">Aplica o <strong>redutor de dupla tributação</strong> da Lei 15.270/2025: a soma da alíquota nominal IRPJ+CSLL da empresa que distribuiu os dividendos com a alíquota efetiva do IRPFM não pode ultrapassar 34% (regra geral), 40% (instituição financeira não bancária) ou 45% (banco). O excesso é descontado do IRPFM proporcionalmente aos dividendos recebidos.</span>
+            <span class="sublabel">Aplica o <strong>redutor de dupla tributação</strong> da Lei 15.270/2025: a soma da alíquota efetiva IRPJ+CSLL da empresa que distribuiu os dividendos com a alíquota efetiva do IRPFM não pode ultrapassar 34% (regra geral), 40% (instituição financeira não bancária) ou 45% (banco). O excesso é descontado do IRPFM proporcionalmente aos dividendos recebidos.</span>
             <select id="regime-pj">
                 <option value="nenhum">Não informar — sem redutor (cálculo conservador)</option>
-                <option value="lucro-real">Lucro Real — geral (PJ 34% / teto combinado 34%)</option>
-                <option value="if-nao-banco">Instituição financeira não bancária (PJ 40% / teto 40%)</option>
-                <option value="banco">Banco / cooperativa de crédito (PJ 45% / teto 45%)</option>
+                <option value="lucro-real">Lucro Real — geral (teto combinado 34%)</option>
+                <option value="if-nao-banco">Instituição financeira não bancária (teto 40%)</option>
+                <option value="banco">Banco / cooperativa de crédito (teto 45%)</option>
                 <option value="presumido-simples">Lucro Presumido ou Simples Nacional — sem redutor</option>
             </select>
+
+            <div class="pj-effective-fields" id="pj-effective-fields">
+                <div class="field-pair">
+                    <label for="lucro-pj">Lucro contábil da PJ pagadora (R$) <span style="font-weight:400; color:#635C54;">(opcional)</span></label>
+                    <span class="sublabel">Lucro líquido contábil <strong>antes</strong> do IRPJ/CSLL — usado para apurar a alíquota efetiva da PJ.</span>
+                    <input type="text" id="lucro-pj" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off">
+                </div>
+                <div class="field-pair">
+                    <label for="ir-pj">IRPJ + CSLL devidos pela PJ (R$) <span style="font-weight:400; color:#635C54;">(opcional)</span></label>
+                    <span class="sublabel">Soma de IRPJ e CSLL efetivamente apurados pela investida no período. Se ambos os campos forem preenchidos, a alíquota efetiva (IRPJ+CSLL ÷ lucro contábil) substitui a nominal no redutor.</span>
+                    <input type="text" id="ir-pj" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off">
+                </div>
+            </div>
         </div>
         <div class="field">
             <label for="alugueis">Aluguéis recebidos (R$)</label>
-            <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="alugueis">
+            <div class="input-pair">
+                <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="alugueis">
+                <input type="text" class="input-aliq" inputmode="decimal" placeholder="Alíq. efet." autocomplete="off" id="aliq-alugueis" aria-label="Alíquota efetiva sobre aluguéis">
+            </div>
         </div>
         <div class="field">
             <label for="renda-fixa">CDB, Fundos, Renda Fixa tributável (R$)</label>
             <span class="sublabel">CDB, fundos comuns, debêntures não incentivadas.</span>
-            <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="renda-fixa">
+            <div class="input-pair">
+                <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="renda-fixa">
+                <input type="text" class="input-aliq" inputmode="decimal" placeholder="Alíq. efet." autocomplete="off" id="aliq-renda-fixa" aria-label="Alíquota efetiva sobre renda fixa">
+            </div>
         </div>
         <div class="field">
             <label for="acoes">Ações / Bolsa (R$)</label>
             <span class="sublabel">Ganhos tributáveis em operações de bolsa.</span>
-            <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="acoes">
+            <div class="input-pair">
+                <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="acoes">
+                <input type="text" class="input-aliq" inputmode="decimal" placeholder="Alíq. efet." autocomplete="off" id="aliq-acoes" aria-label="Alíquota efetiva sobre ações">
+            </div>
         </div>
         <div class="field">
             <label for="outros">Outros rendimentos tributáveis (R$)</label>
-            <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="outros">
+            <div class="input-pair">
+                <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="outros">
+                <input type="text" class="input-aliq" inputmode="decimal" placeholder="Alíq. efet." autocomplete="off" id="aliq-outros" aria-label="Alíquota efetiva sobre outros rendimentos">
+            </div>
         </div>
 
         <p class="section-label" style="margin-top:32px">IR já pago (compensável)</p>
@@ -572,7 +774,7 @@
             <span class="value" id="res-bruto">R$ 0,00</span>
         </div>
         <div class="result-row" id="row-aliq-pj" style="display:none">
-            <span class="label">Alíquota nominal PJ pagadora</span>
+            <span class="label" id="lbl-aliq-pj">Alíquota PJ pagadora</span>
             <span class="value" id="res-aliq-pj">0,00%</span>
         </div>
         <div class="result-row" id="row-soma" style="display:none">
@@ -598,6 +800,34 @@
         </div>
 
         <div id="status-container"></div>
+
+        <div class="dilution-section" id="dilution-section">
+            <h4>Análise de diluição da carga tributária</h4>
+            <p class="dilution-help">IR efetivo estimado por linha de rendimento, com base nas alíquotas efetivas informadas. Mostra como os dividendos (tributados na PJ, e não na PF) <strong>diluem</strong> a alíquota efetiva ponderada do contribuinte e, com isso, fazem incidir o IRPFM sobre os demais rendimentos.</p>
+            <table class="dilution-table" id="dilution-table">
+                <thead>
+                    <tr>
+                        <th>Linha</th>
+                        <th>Renda</th>
+                        <th>Alíq. efet.</th>
+                        <th>IR efetivo</th>
+                    </tr>
+                </thead>
+                <tbody id="dilution-tbody"></tbody>
+            </table>
+            <div class="dilution-summary">
+                <span class="label">Alíquota efetiva ponderada (com dividendos)</span>
+                <span class="value" id="dilution-aliq-com">0,00%</span>
+            </div>
+            <div class="dilution-summary">
+                <span class="label">Alíquota efetiva ponderada (sem dividendos)</span>
+                <span class="value" id="dilution-aliq-sem">0,00%</span>
+            </div>
+            <div class="dilution-summary highlight">
+                <span class="label">Diluição provocada pelos dividendos</span>
+                <span class="value" id="dilution-pp">0,00 p.p.</span>
+            </div>
+        </div>
     </div>
 
     <div class="legal-footer">
@@ -630,6 +860,44 @@
         });
     }
 
+    // --- Máscara de alíquota (%) — aceita 0 a 100, com até 2 decimais ---
+    function parsePct(str) {
+        if (!str) return null;
+        var clean = String(str).replace(/[^\d,]/g, '').replace(',', '.');
+        if (clean === '' || clean === '.') return null;
+        var n = parseFloat(clean);
+        if (isNaN(n)) return null;
+        return n;
+    }
+
+    function maskPct(input) {
+        input.addEventListener('input', function () {
+            var v = input.value;
+            // Permite dígitos e vírgula; apenas uma vírgula; ignora pontos.
+            v = v.replace(/[^\d,]/g, '');
+            var parts = v.split(',');
+            if (parts.length > 2) v = parts[0] + ',' + parts.slice(1).join('');
+            // Limita inteiros a 3 dígitos (até 100) e decimais a 2.
+            var p = v.split(',');
+            if (p[0].length > 3) p[0] = p[0].slice(0, 3);
+            if (p[1] !== undefined && p[1].length > 2) p[1] = p[1].slice(0, 2);
+            v = p.join(',');
+            input.value = v;
+            recalc();
+        });
+        input.addEventListener('blur', function () {
+            var n = parsePct(input.value);
+            if (n === null) { input.value = ''; return; }
+            if (n > 100) n = 100;
+            input.value = n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
+            recalc();
+        });
+        input.addEventListener('focus', function () {
+            // Remove o "%" para edição confortável.
+            input.value = input.value.replace('%', '').trim();
+        });
+    }
+
     // --- Tabs ---
     var tabs = document.querySelectorAll('.tab');
     var panels = document.querySelectorAll('.mode-panel');
@@ -645,7 +913,10 @@
     });
 
     // --- Init masks ---
-    document.querySelectorAll('input[type="text"]').forEach(maskMoney);
+    document.querySelectorAll('input.input-aliq').forEach(maskPct);
+    document.querySelectorAll('input[type="text"]').forEach(function (el) {
+        if (!el.classList.contains('input-aliq')) maskMoney(el);
+    });
 
     // --- Listener do dropdown de regime PJ ---
     var regimeSel = document.getElementById('regime-pj');
@@ -661,17 +932,41 @@
     function getRegimeData() {
         var sel = document.getElementById('regime-pj');
         if (!sel) return null;
+        var base;
         switch (sel.value) {
-            case 'lucro-real':    return { aliqPJ: 34, teto: 34, label: 'Lucro Real' };
-            case 'if-nao-banco':  return { aliqPJ: 40, teto: 40, label: 'Instituição financeira não bancária' };
-            case 'banco':         return { aliqPJ: 45, teto: 45, label: 'Banco / cooperativa de crédito' };
+            case 'lucro-real':    base = { aliqNominal: 34, teto: 34, label: 'Lucro Real' }; break;
+            case 'if-nao-banco':  base = { aliqNominal: 40, teto: 40, label: 'Instituição financeira não bancária' }; break;
+            case 'banco':         base = { aliqNominal: 45, teto: 45, label: 'Banco / cooperativa de crédito' }; break;
             default:              return null;
         }
+        // Tenta calcular alíquota efetiva a partir de lucro contábil + IRPJ/CSLL.
+        var lucro = parseBRL((document.getElementById('lucro-pj') || {}).value || '');
+        var irPj  = parseBRL((document.getElementById('ir-pj')    || {}).value || '');
+        var aliqEfetiva = null;
+        if (lucro > 0 && irPj > 0) {
+            aliqEfetiva = (irPj / lucro) * 100;
+            if (aliqEfetiva > 100) aliqEfetiva = 100;
+        }
+        base.aliqEfetiva = aliqEfetiva;
+        // Alíquota efetivamente usada no redutor: efetiva quando informada, senão nominal.
+        base.aliqPJ = aliqEfetiva !== null ? aliqEfetiva : base.aliqNominal;
+        base.usouEfetiva = aliqEfetiva !== null;
+        return base;
     }
+
+    var LINHAS = [
+        { id: 'salarios',   label: 'Salários / CLT' },
+        { id: 'prolabore',  label: 'Pró-labore' },
+        { id: 'alugueis',   label: 'Aluguéis' },
+        { id: 'renda-fixa', label: 'Renda fixa tributável' },
+        { id: 'acoes',      label: 'Ações / Bolsa' },
+        { id: 'outros',     label: 'Outros tributáveis' }
+    ];
 
     function getValues() {
         var mode = getActiveMode();
         var rendaTotal, irPago, dividendos = 0;
+        var linhas = [];
 
         if (mode === 'basico') {
             rendaTotal = parseBRL(document.getElementById('renda-total').value);
@@ -679,21 +974,34 @@
         } else {
             dividendos = parseBRL(document.getElementById('dividendos').value);
 
-            rendaTotal =
-                parseBRL(document.getElementById('salarios').value) +
-                parseBRL(document.getElementById('prolabore').value) +
-                dividendos +
-                parseBRL(document.getElementById('alugueis').value) +
-                parseBRL(document.getElementById('renda-fixa').value) +
-                parseBRL(document.getElementById('acoes').value) +
-                parseBRL(document.getElementById('outros').value);
+            var somaLinhas = 0;
+            LINHAS.forEach(function (linha) {
+                var valor = parseBRL(document.getElementById(linha.id).value);
+                var aliqRaw = parsePct(document.getElementById('aliq-' + linha.id).value);
+                somaLinhas += valor;
+                linhas.push({
+                    id: linha.id,
+                    label: linha.label,
+                    valor: valor,
+                    aliq: aliqRaw,
+                    irEfetivo: (aliqRaw !== null && valor > 0) ? (valor * aliqRaw / 100) : 0,
+                    aliqInformada: aliqRaw !== null
+                });
+            });
+
+            rendaTotal = somaLinhas + dividendos;
 
             irPago =
                 parseBRL(document.getElementById('irrf').value) +
                 parseBRL(document.getElementById('ir-invest').value);
         }
 
-        return { rendaTotal: rendaTotal, irPago: irPago, dividendos: dividendos };
+        return {
+            rendaTotal: rendaTotal,
+            irPago: irPago,
+            dividendos: dividendos,
+            linhas: linhas
+        };
     }
 
     function calcIRPFM(rendaTotal) {
@@ -706,13 +1014,30 @@
         return x.toFixed(2).replace('.', ',') + '%';
     }
 
+    function regimeTemRedutor() {
+        var sel = document.getElementById('regime-pj');
+        if (!sel) return false;
+        return sel.value === 'lucro-real' || sel.value === 'if-nao-banco' || sel.value === 'banco';
+    }
+
+    function syncPjEffectiveFieldsVisibility() {
+        var box = document.getElementById('pj-effective-fields');
+        if (!box) return;
+        if (regimeTemRedutor()) box.classList.add('visible');
+        else box.classList.remove('visible');
+    }
+
     function recalc() {
+        syncPjEffectiveFieldsVisibility();
+
         var v = getValues();
         var aliquota = calcIRPFM(v.rendaTotal);
         var bruto = (aliquota / 100) * v.rendaTotal;
 
         // --- Redutor de dupla tributação (Lei 15.270/2025) ---
         // Aplica-se apenas no Modo Avançado, com regime informado e dividendos > 0.
+        // Usa a alíquota EFETIVA da PJ (IRPJ+CSLL ÷ lucro contábil) quando informada;
+        // caso contrário, cai para a alíquota nominal do regime selecionado.
         // Fórmula: se (aliqPJ + aliqIRPFM) > teto, redutor = (excesso) × dividendos,
         // limitado à parcela do IRPFM atribuível aos dividendos (aliqIRPFM × dividendos).
         var regime = (getActiveMode() === 'avancado') ? getRegimeData() : null;
@@ -727,7 +1052,6 @@
                 var maxRedutor = (aliquota / 100) * v.dividendos;
                 redutor = Math.min(maxRedutor, (excessoPct / 100) * v.dividendos);
             }
-            // Alíquota efetiva combinada sobre os dividendos, após o redutor
             var irpfmDividendosLiquido = (aliquota / 100) * v.dividendos - redutor;
             aliqCombFinal = regime.aliqPJ + (irpfmDividendosLiquido / v.dividendos) * 100;
         }
@@ -752,11 +1076,15 @@
         var rowSoma     = document.getElementById('row-soma');
         var rowRedutor  = document.getElementById('row-redutor');
         var rowAliqComb = document.getElementById('row-aliq-comb');
+        var lblAliqPJ   = document.getElementById('lbl-aliq-pj');
 
         if (regime && v.dividendos > 0 && aliquota > 0) {
             rowAliqPJ.style.display = '';
             rowSoma.style.display = '';
             rowAliqComb.style.display = '';
+            lblAliqPJ.textContent = regime.usouEfetiva
+                ? 'Alíquota efetiva PJ pagadora (informada)'
+                : 'Alíquota nominal PJ pagadora (regime)';
             document.getElementById('res-aliq-pj').textContent = fmtPct(regime.aliqPJ);
             document.getElementById('res-soma').textContent = fmtPct(soma);
             document.getElementById('res-aliq-comb').textContent = fmtPct(aliqCombFinal);
@@ -795,16 +1123,93 @@
 
         container.appendChild(tag);
 
-        // Mensagem secundária quando o redutor está ativo
         if (redutor > 0) {
             var note = document.createElement('div');
             note.style.cssText = 'margin-top:10px; font-size:12px; color:#635C54; line-height:1.5;';
+            var origem = regime.usouEfetiva ? 'efetiva' : 'nominal';
             note.innerHTML = 'O <strong>redutor de dupla tributação</strong> reduziu o IRPFM em <strong>' +
-                formatBRL(redutor) + '</strong> para que a soma da tributação da PJ (' +
+                formatBRL(redutor) + '</strong> para que a soma da tributação da PJ (alíquota ' + origem + ' ' +
                 fmtPct(regime.aliqPJ) + ') com a alíquota efetiva do IRPFM sobre os dividendos não ultrapasse o teto de ' +
                 fmtPct(regime.teto) + '.';
             container.appendChild(note);
         }
+
+        // --- Análise de diluição (Modo Avançado, ao menos uma alíquota efetiva informada) ---
+        renderDilution(v);
+    }
+
+    function renderDilution(v) {
+        var section = document.getElementById('dilution-section');
+        var tbody = document.getElementById('dilution-tbody');
+        if (!section || !tbody) return;
+
+        if (getActiveMode() !== 'avancado' || !v.linhas || v.linhas.length === 0) {
+            section.classList.remove('visible');
+            return;
+        }
+
+        var temAlgumaAliq = v.linhas.some(function (l) { return l.aliqInformada && l.valor > 0; });
+        if (!temAlgumaAliq) {
+            section.classList.remove('visible');
+            return;
+        }
+
+        section.classList.add('visible');
+        tbody.innerHTML = '';
+
+        var totalRenda = 0;
+        var totalIR = 0;
+        var totalRendaSemDiv = 0;
+        var totalIRSemDiv = 0;
+
+        v.linhas.forEach(function (l) {
+            if (l.valor <= 0 && !l.aliqInformada) return;
+            var tr = document.createElement('tr');
+            var aliqStr = l.aliqInformada ? fmtPct(l.aliq) : '—';
+            tr.innerHTML =
+                '<td class="line-name">' + l.label + '</td>' +
+                '<td>' + formatBRL(l.valor) + '</td>' +
+                '<td>' + aliqStr + '</td>' +
+                '<td>' + formatBRL(l.irEfetivo) + '</td>';
+            tbody.appendChild(tr);
+            totalRenda += l.valor;
+            totalIR += l.irEfetivo;
+            totalRendaSemDiv += l.valor;
+            totalIRSemDiv += l.irEfetivo;
+        });
+
+        // Linha dos dividendos (alíquota PF = 0% por padrão; ajuste após retenção fica no IR já pago).
+        if (v.dividendos > 0) {
+            var trDiv = document.createElement('tr');
+            trDiv.innerHTML =
+                '<td class="line-name">Dividendos / Lucros</td>' +
+                '<td>' + formatBRL(v.dividendos) + '</td>' +
+                '<td>0,00%</td>' +
+                '<td>' + formatBRL(0) + '</td>';
+            tbody.appendChild(trDiv);
+            totalRenda += v.dividendos;
+        }
+
+        // Total geral
+        var trTotal = document.createElement('tr');
+        trTotal.className = 'dilution-total';
+        var aliqPondCom = totalRenda > 0 ? (totalIR / totalRenda) * 100 : 0;
+        trTotal.innerHTML =
+            '<td class="line-name">Total</td>' +
+            '<td>' + formatBRL(totalRenda) + '</td>' +
+            '<td>' + fmtPct(aliqPondCom) + '</td>' +
+            '<td>' + formatBRL(totalIR) + '</td>';
+        tbody.appendChild(trTotal);
+
+        var aliqPondSem = totalRendaSemDiv > 0 ? (totalIRSemDiv / totalRendaSemDiv) * 100 : 0;
+        var diluicao = aliqPondSem - aliqPondCom;
+
+        document.getElementById('dilution-aliq-com').textContent = fmtPct(aliqPondCom);
+        document.getElementById('dilution-aliq-sem').textContent = v.dividendos > 0 ? fmtPct(aliqPondSem) : '— (sem dividendos)';
+        document.getElementById('dilution-pp').textContent =
+            v.dividendos > 0
+                ? '−' + diluicao.toFixed(2).replace('.', ',') + ' p.p.'
+                : '—';
     }
 
     // Cálculo inicial
