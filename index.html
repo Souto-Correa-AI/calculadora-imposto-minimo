@@ -570,6 +570,149 @@
             color: #1a1a1a;
         }
 
+        .legal-footer .reopen-link {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #FF5527;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            text-decoration: underline;
+            font-family: inherit;
+        }
+
+        .legal-footer .reopen-link:hover {
+            color: #c43d12;
+        }
+
+        /* DISCLAIMER MODAL */
+        .disclaimer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            z-index: 1000;
+            padding: 32px 16px;
+            overflow-y: auto;
+        }
+
+        .disclaimer-overlay.visible {
+            display: flex;
+        }
+
+        .disclaimer-modal {
+            background: #FFF;
+            max-width: 640px;
+            width: 100%;
+            border-top: 4px solid #FF5527;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25);
+            margin: auto;
+        }
+
+        .disclaimer-header {
+            padding: 20px 24px 12px;
+            border-bottom: 1px solid #e0dbd5;
+        }
+
+        .disclaimer-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 2px;
+        }
+
+        .disclaimer-header .subtitle {
+            font-size: 12px;
+            color: #635C54;
+            margin: 0;
+        }
+
+        .disclaimer-body {
+            padding: 18px 24px 8px;
+            max-height: 60vh;
+            overflow-y: auto;
+            font-size: 13px;
+            color: #1a1a1a;
+            line-height: 1.55;
+        }
+
+        .disclaimer-body h3 {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #635C54;
+            margin-bottom: 8px;
+            margin-top: 18px;
+        }
+
+        .disclaimer-body h3:first-child {
+            margin-top: 0;
+        }
+
+        .disclaimer-body p {
+            margin-bottom: 10px;
+        }
+
+        .disclaimer-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        .disclaimer-divider {
+            border: none;
+            border-top: 1px dashed #c1b39f;
+            margin: 18px 0;
+        }
+
+        .disclaimer-footer {
+            padding: 14px 24px 20px;
+            border-top: 1px solid #e0dbd5;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .disclaimer-btn {
+            background: #000;
+            color: #FFF;
+            border: none;
+            padding: 10px 22px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.15s;
+        }
+
+        .disclaimer-btn:hover {
+            background: #FF5527;
+        }
+
+        @media (max-width: 520px) {
+            .disclaimer-overlay {
+                padding: 0;
+            }
+            .disclaimer-modal {
+                min-height: 100vh;
+            }
+            .disclaimer-header {
+                padding: 18px 18px 10px;
+            }
+            .disclaimer-body {
+                padding: 16px 18px 8px;
+                max-height: none;
+            }
+            .disclaimer-footer {
+                padding: 14px 18px 18px;
+            }
+        }
+
         /* RESPONSIVE */
         @media (max-width: 520px) {
             header {
@@ -731,9 +874,9 @@
                 <li>LCI / LCA</li>
                 <li>CRI / CRA</li>
                 <li>FIIs / Fiagro</li>
-                <li>Heranças e doações</li>
+                <li>Heranças, doações e adiantamento de legítima</li>
                 <li>Indenizações por doença grave</li>
-                <li>Ganho de capital (venda de imóvel fora de bolsa)</li>
+                <li>Ganho de capital fora de bolsa</li>
                 <li>Aluguéis atrasados via ação judicial (RRA)</li>
             </ul>
         </div>
@@ -832,8 +975,38 @@
 
     <div class="legal-footer">
         <strong>Base legal:</strong> Lei nº 15.270/2025 (Reforma da Renda). O IRPFM será apurado na Declaração de Ajuste Anual a partir do exercício 2027 (ano-calendário 2026). Esta calculadora é uma ferramenta de simulação e não substitui orientação contábil profissional. Cerca de 141 mil contribuintes são afetados pela medida, segundo estimativa do Governo Federal.
+        <br>
+        <button type="button" class="reopen-link" id="reopen-disclaimer">Reabrir aviso importante / Reopen important notice</button>
     </div>
 </main>
+
+<!-- DISCLAIMER MODAL -->
+<div class="disclaimer-overlay" id="disclaimer-overlay" role="dialog" aria-modal="true" aria-labelledby="disclaimer-title">
+    <div class="disclaimer-modal">
+        <div class="disclaimer-header">
+            <h2 id="disclaimer-title">Aviso Importante / Important Notice</h2>
+            <p class="subtitle">Leia antes de utilizar a calculadora · Please read before using the tool</p>
+        </div>
+        <div class="disclaimer-body">
+            <h3>Aviso Importante</h3>
+            <p>Esta ferramenta online de simulação de impactos tributários foi desenvolvida com a finalidade exclusivamente ilustrativa e informativa, não constituindo, nem devendo ser interpretada como, aconselhamento jurídico, tributário ou contábil.</p>
+            <p>Os resultados apresentados baseiam-se em premissas genéricas e simplificadas, podendo não refletir as características específicas de cada contribuinte, operação ou estrutura societária.</p>
+            <p>A utilização desta ferramenta não substitui a análise individualizada por advogado, consultor tributário ou outro profissional qualificado, tampouco dispensa a obtenção de orientação profissional adequada antes da tomada de qualquer decisão.</p>
+            <p>Nenhuma responsabilidade é assumida por decisões tomadas com base exclusiva nas informações ou resultados gerados por esta ferramenta.</p>
+
+            <hr class="disclaimer-divider">
+
+            <h3>Important Notice</h3>
+            <p>This online tax impact simulation tool is provided solely for illustrative and informational purposes and does not constitute, nor should it be construed as, legal, tax, or accounting advice.</p>
+            <p>The outputs generated by this tool are based on general assumptions and simplified parameters and may not reflect the specific facts, circumstances, or legal position of any particular taxpayer or transaction.</p>
+            <p>The use of this tool does not replace a case-specific assessment by a qualified attorney, tax advisor, or other professional, nor should it be relied upon as a basis for making decisions without obtaining appropriate professional advice.</p>
+            <p>No liability is accepted for any actions taken or decisions made based solely on the information or results produced by this tool.</p>
+        </div>
+        <div class="disclaimer-footer">
+            <button type="button" class="disclaimer-btn" id="accept-disclaimer">Li e estou ciente / I understand</button>
+        </div>
+    </div>
+</div>
 
 <script>
 (function () {
@@ -1214,6 +1387,37 @@
 
     // Cálculo inicial
     recalc();
+
+    // --- Modal de disclaimer ---
+    var overlay = document.getElementById('disclaimer-overlay');
+    var btnAccept = document.getElementById('accept-disclaimer');
+    var btnReopen = document.getElementById('reopen-disclaimer');
+
+    function openDisclaimer() {
+        if (!overlay) return;
+        overlay.classList.add('visible');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDisclaimer() {
+        if (!overlay) return;
+        overlay.classList.remove('visible');
+        document.body.style.overflow = '';
+        try { sessionStorage.setItem('irpfm-disclaimer-ack', '1'); } catch (e) {}
+    }
+
+    var alreadyAck = false;
+    try { alreadyAck = sessionStorage.getItem('irpfm-disclaimer-ack') === '1'; } catch (e) {}
+    if (!alreadyAck) openDisclaimer();
+
+    if (btnAccept) btnAccept.addEventListener('click', closeDisclaimer);
+    if (btnReopen) btnReopen.addEventListener('click', openDisclaimer);
+    if (overlay) overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) closeDisclaimer();
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && overlay.classList.contains('visible')) closeDisclaimer();
+    });
 })();
 </script>
 
