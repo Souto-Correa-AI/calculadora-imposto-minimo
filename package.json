@@ -1,11 +1,18 @@
 {
   "name": "calculadora-imposto-minimo",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
+  "description": "Calculadora IRPFM 2026 — Souto Correa (front estático + backend Express + integração Mailchimp para captura de lead)",
+  "main": "server.js",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "start": "serve . -l tcp://0.0.0.0:$PORT"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "dependencies": {
-    "serve": "^14.2.0"
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0"
   }
 }

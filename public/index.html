@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+    <title>Calculadora IRPFM 2026 — Souto Correa</title>
+</head>
+<body>
+
+<header>
+    <div class="header-title">Calculadora IRPFM 2026</div>
+    <div class="header-logo"><img src="logo_branco.png" alt="Souto Correa"></div>
+</header>
+
+<main>
+    <h1>Calculadora do IRPFM</h1>
+    <p class="subtitle">Imposto de Renda da Pessoa Física Mínimo — Lei nº 15.270/2025</p>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab active" data-mode="basico" type="button">Básico</button>
+        <button class="tab" data-mode="avancado" type="button">Avançado</button>
+    </div>
+
+    <!-- MODO BÁSICO -->
+    <div class="mode-panel active" id="panel-basico">
+        <div class="field">
+            <label for="renda-total">Renda Total Anual (R$)</label>
+            <span class="sublabel">Soma de todos os rendimentos (tributáveis + dividendos + investimentos tributáveis). Não inclua poupança, LCI, LCA, FIIs, Fiagro, heranças.</span>
+            <input type="text" id="renda-total" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off">
+        </div>
+        <div class="field">
+            <label for="ir-pago">IR Já Pago no Ano (R$)</label>
+            <span class="sublabel">Soma do IRPF retido na fonte + IR sobre investimentos tributáveis.</span>
+            <input type="text" id="ir-pago" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off">
+        </div>
+    </div>
+
+    <!-- MODO AVANÇADO -->
+    <div class="mode-panel" id="panel-avancado">
+        <p class="section-label">Rendimentos incluídos na base</p>
+
+        <div class="field">
+            <label for="salarios">Salários / CLT (R$)</label>
+            <span class="sublabel">Rendimentos anuais brutos do trabalho assalariado. À direita, a <strong>alíquota efetiva</strong> total que já incidiu sobre essa linha (opcional, usada na análise de diluição).</span>
+            <div class="input-pair">
+                <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="salarios">
+                <input type="text" class="input-aliq" inputmode="decimal" placeholder="Alíq. efet." autocomplete="off" id="aliq-salarios" aria-label="Alíquota efetiva sobre salários">
+            </div>
+        </div>
+        <div class="field">
+            <label for="prolabore">Pró-labore (R$)</label>
+            <span class="sublabel">Retiradas como sócio/administrador.</span>
+            <div class="input-pair">
+                <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="prolabore">
+                <input type="text" class="input-aliq" inputmode="decimal" placeholder="Alíq. efet." autocomplete="off" id="aliq-prolabore" aria-label="Alíquota efetiva sobre pró-labore">
+            </div>
+        </div>
+        <div class="field">
+            <label for="dividendos">Dividendos e Lucros (R$)</label>
+            <span class="sublabel">Distribuição de lucros recebida no ano (todos os valores, inclusive &lt; R$ 50 mil/mês).</span>
+            <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="dividendos">
+        </div>
+
+        <div class="subfield">
+            <label for="regime-pj">Origem dos dividendos — regime tributário da PJ pagadora <span style="font-weight:400; text-transform:none; letter-spacing:0; color:#635C54;">(opcional)</span></label>
+            <span class="sublabel">Aplica o <strong>redutor de dupla tributação</strong> da Lei 15.270/2025: a soma da alíquota efetiva IRPJ+CSLL da empresa que distribuiu os dividendos com a alíquota efetiva do IRPFM não pode ultrapassar 34% (regra geral), 40% (instituição financeira não bancária) ou 45% (banco). O excesso é descontado do IRPFM proporcionalmente aos dividendos recebidos.</span>
+            <select id="regime-pj">
+                <option value="nenhum">Não informar — sem redutor (cálculo conservador)</option>
+                <option value="lucro-real">Lucro Real — geral (teto combinado 34%)</option>
+                <option value="if-nao-banco">Instituição financeira não bancária (teto 40%)</option>
+                <option value="banco">Banco / cooperativa de crédito (teto 45%)</option>
+                <option value="presumido-simples">Lucro Presumido ou Simples Nacional — sem redutor</option>
+            </select>
+
+            <div class="pj-effective-fields" id="pj-effective-fields">
+                <div class="field-pair">
+                    <label for="lucro-pj">Lucro contábil da PJ pagadora (R$) <span style="font-weight:400; color:#635C54;">(opcional)</span></label>
+                    <span class="sublabel">Lucro líquido contábil <strong>antes</strong> do IRPJ/CSLL — usado para apurar a alíquota efetiva da PJ.</span>
+                    <input type="text" id="lucro-pj" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off">
+                </div>
+                <div class="field-pair">
+                    <label for="ir-pj">IRPJ + CSLL devidos pela PJ (R$) <span style="font-weight:400; color:#635C54;">(opcional)</span></label>
+                    <span class="sublabel">Soma de IRPJ e CSLL efetivamente apurados pela investida no período. Se ambos os campos forem preenchidos, a alíquota efetiva (IRPJ+CSLL ÷ lucro contábil) substitui a nominal no redutor.</span>
+                    <input type="text" id="ir-pj" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off">
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <label for="alugueis">Aluguéis recebidos (R$)</label>
+            <div class="input-pair">
+                <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="alugueis">
+                <input type="text" class="input-aliq" inputmode="decimal" placeholder="Alíq. efet." autocomplete="off" id="aliq-alugueis" aria-label="Alíquota efetiva sobre aluguéis">
+            </div>
+        </div>
+        <div class="field">
+            <label for="renda-fixa">CDB, Fundos, Renda Fixa tributável (R$)</label>
+            <span class="sublabel">CDB, fundos comuns, debêntures não incentivadas.</span>
+            <div class="input-pair">
+                <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="renda-fixa">
+                <input type="text" class="input-aliq" inputmode="decimal" placeholder="Alíq. efet." autocomplete="off" id="aliq-renda-fixa" aria-label="Alíquota efetiva sobre renda fixa">
+            </div>
+        </div>
+        <div class="field">
+            <label for="acoes">Ações / Bolsa (R$)</label>
+            <span class="sublabel">Ganhos tributáveis em operações de bolsa.</span>
+            <div class="input-pair">
+                <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="acoes">
+                <input type="text" class="input-aliq" inputmode="decimal" placeholder="Alíq. efet." autocomplete="off" id="aliq-acoes" aria-label="Alíquota efetiva sobre ações">
+            </div>
+        </div>
+        <div class="field">
+            <label for="outros">Outros rendimentos tributáveis (R$)</label>
+            <div class="input-pair">
+                <input type="text" class="input-renda" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="outros">
+                <input type="text" class="input-aliq" inputmode="decimal" placeholder="Alíq. efet." autocomplete="off" id="aliq-outros" aria-label="Alíquota efetiva sobre outros rendimentos">
+            </div>
+        </div>
+
+        <p class="section-label" style="margin-top:32px">IR já pago (compensável)</p>
+
+        <div class="field">
+            <label for="irrf">IR Retido na Fonte — IRRF (R$)</label>
+            <span class="sublabel">Sobre salários, pró-labore, aluguéis.</span>
+            <input type="text" class="input-ir" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="irrf">
+        </div>
+        <div class="field">
+            <label for="ir-invest">IR sobre Investimentos (R$)</label>
+            <span class="sublabel">IR retido em CDB, fundos, ações, etc.</span>
+            <input type="text" class="input-ir" inputmode="decimal" placeholder="R$ 0,00" autocomplete="off" id="ir-invest">
+        </div>
+
+        <div class="info-box">
+            <h3>Rendimentos excluídos da base IRPFM</h3>
+            <ul>
+                <li>Poupança</li>
+                <li>LCI / LCA</li>
+                <li>CRI / CRA</li>
+                <li>FIIs / Fiagro</li>
+                <li>Heranças, doações em adiantamento de legítima</li>
+                <li>Indenizações por doença grave</li>
+                <li>Ganho de capital fora de bolsa</li>
+                <li>Aluguéis atrasados via ação judicial (RRA)</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div class="results">
+        <p class="results-title">Resultado da Simulação</p>
+
+        <div class="gauge-container">
+            <div class="gauge-header">
+                <span class="gauge-label">Alíquota IRPFM</span>
+                <span class="gauge-value" id="res-aliquota-pct">0,00%</span>
+            </div>
+            <div class="gauge-track">
+                <div class="gauge-fill" id="gauge-fill"></div>
+            </div>
+            <div class="gauge-ticks">
+                <span>0%</span>
+                <span>2%</span>
+                <span>4%</span>
+                <span>6%</span>
+                <span>8%</span>
+                <span>10%</span>
+            </div>
+        </div>
+
+        <div class="result-row">
+            <span class="label">Renda Total Anual</span>
+            <span class="value" id="res-renda">R$ 0,00</span>
+        </div>
+        <div class="result-row">
+            <span class="label">Alíquota IRPFM</span>
+            <span class="value" id="res-aliquota">0,00%</span>
+        </div>
+        <div class="result-row">
+            <span class="label">Imposto Mínimo Bruto</span>
+            <span class="value" id="res-bruto">R$ 0,00</span>
+        </div>
+        <div class="result-row" id="row-aliq-pj" style="display:none">
+            <span class="label" id="lbl-aliq-pj">Alíquota PJ pagadora</span>
+            <span class="value" id="res-aliq-pj">0,00%</span>
+        </div>
+        <div class="result-row" id="row-soma" style="display:none">
+            <span class="label">Soma PJ + IRPFM (sobre dividendos)</span>
+            <span class="value" id="res-soma">0,00%</span>
+        </div>
+        <div class="result-row" id="row-redutor" style="display:none">
+            <span class="label">Redutor de dupla tributação</span>
+            <span class="value" id="res-redutor">R$ 0,00</span>
+        </div>
+        <div class="result-row" id="row-aliq-comb" style="display:none">
+            <span class="label">Alíquota efetiva combinada (PJ + IRPFM)</span>
+            <span class="value" id="res-aliq-comb">0,00%</span>
+        </div>
+        <div class="result-row">
+            <span class="label">IR Já Compensado</span>
+            <span class="value" id="res-compensado">R$ 0,00</span>
+        </div>
+
+        <div class="result-main">
+            <span class="label">IRPFM a Pagar</span>
+            <span class="value" id="res-pagar">R$ 0,00</span>
+        </div>
+
+        <div id="status-container"></div>
+
+        <div class="dilution-section" id="dilution-section">
+            <h4>Análise de diluição da carga tributária</h4>
+            <p class="dilution-help">IR efetivo estimado por linha de rendimento, com base nas alíquotas efetivas informadas. Mostra como os dividendos (tributados na PJ, e não na PF) <strong>diluem</strong> a alíquota efetiva ponderada do contribuinte e, com isso, fazem incidir o IRPFM sobre os demais rendimentos.</p>
+            <div class="dilution-table-wrap">
+                <table class="dilution-table" id="dilution-table">
+                    <thead>
+                        <tr>
+                            <th>Linha</th>
+                            <th>Renda</th>
+                            <th>Alíq. efet.</th>
+                            <th>IR efetivo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dilution-tbody"></tbody>
+                </table>
+            </div>
+            <div class="dilution-summary">
+                <span class="label">Alíquota efetiva ponderada (com dividendos)</span>
+                <span class="value" id="dilution-aliq-com">0,00%</span>
+            </div>
+            <div class="dilution-summary">
+                <span class="label">Alíquota efetiva ponderada (sem dividendos)</span>
+                <span class="value" id="dilution-aliq-sem">0,00%</span>
+            </div>
+            <div class="dilution-summary highlight">
+                <span class="label">Diluição provocada pelos dividendos</span>
+                <span class="value" id="dilution-pp">0,00 p.p.</span>
+            </div>
+        </div>
+    </div>
+
+    <!--
+      LEAD CAPTURE
+      Público inicial é mailing curado do tributário, com opt-in prévio
+      explícito para comunicações tributárias da Souto Correa. Ainda
+      assim, exigimos consentimento explícito por checkbox para
+      registrar a finalidade específica desta captura (envio do
+      relatório personalizado baseado na simulação).
+      DPO: Paulo Dornelles.
+
+      SE A CALCULADORA FOR EXPOSTA PUBLICAMENTE (fora do mailing curado):
+        - manter o checkbox obrigatório (já está)
+        - persistir registro completo do consentimento em banco próprio
+          (email, nome, texto exato do termo, versão da política, IP,
+          user agent, timestamp) — hoje só logamos no backend
+        - mudar status_if_new no Mailchimp de "subscribed" para "pending"
+          (double opt-in via link de confirmação)
+    -->
+    <section class="lead-capture" id="lead-capture" hidden aria-labelledby="lead-title">
+        <h3 id="lead-title">Receber relatório por email</h3>
+        <p class="lead-intro">A equipe tributária da Souto Correa pode preparar uma análise personalizada deste cenário.</p>
+        <form id="lead-form" novalidate>
+            <div class="lead-field">
+                <label for="lead-nome">Nome</label>
+                <input type="text" id="lead-nome" name="nome" autocomplete="name" required minlength="2">
+            </div>
+            <div class="lead-field">
+                <label for="lead-email">Email</label>
+                <input type="email" id="lead-email" name="email" autocomplete="email" inputmode="email" required>
+            </div>
+            <div class="lead-consent">
+                <input type="checkbox" id="lead-consent" required>
+                <label for="lead-consent">
+                    Autorizo a Souto Correa a entrar em contato com base nesta simulação e a tratar meus dados conforme a <a href="/politica-de-privacidade" target="_blank" rel="noopener">Política de Privacidade</a>.
+                </label>
+            </div>
+            <button type="submit" class="lead-submit" id="lead-submit" disabled>Receber relatório por email</button>
+            <p class="lead-status" id="lead-status" role="status" aria-live="polite"></p>
+        </form>
+    </section>
+
+    <div class="legal-footer">
+        <strong>Base legal:</strong> Lei nº 15.270/2025 (Reforma da Renda). O IRPFM será apurado na Declaração de Ajuste Anual a partir do exercício 2027 (ano-calendário 2026). Esta calculadora é uma ferramenta de simulação e não substitui orientação jurídica e contábil profissional. Cerca de 141 mil contribuintes são afetados pela medida, segundo estimativa do Governo Federal.
+        <br>
+        <button type="button" class="reopen-link" id="reopen-disclaimer">Reabrir aviso importante / Reopen important notice</button>
+    </div>
+</main>
+
+<!-- DISCLAIMER MODAL -->
+<div class="disclaimer-overlay" id="disclaimer-overlay" role="dialog" aria-modal="true" aria-labelledby="disclaimer-title">
+    <div class="disclaimer-modal">
+        <div class="disclaimer-header">
+            <h2 id="disclaimer-title">Aviso Importante / Important Notice</h2>
+            <p class="subtitle">Leia antes de utilizar a calculadora · Please read before using the tool</p>
+        </div>
+        <div class="disclaimer-body">
+            <h3>Aviso Importante</h3>
+            <p>Esta ferramenta online de simulação de impactos tributários foi desenvolvida com a finalidade exclusivamente ilustrativa e informativa, não constituindo, nem devendo ser interpretada como, aconselhamento jurídico, tributário ou contábil.</p>
+            <p>Os resultados apresentados baseiam-se em premissas genéricas e simplificadas, podendo não refletir as características específicas de cada contribuinte, operação ou estrutura societária.</p>
+            <p>A utilização desta ferramenta não substitui a análise individualizada por advogado, consultor tributário ou outro profissional qualificado, tampouco dispensa a obtenção de orientação profissional adequada antes da tomada de qualquer decisão.</p>
+            <p>Nenhuma responsabilidade é assumida por decisões tomadas com base exclusiva nas informações ou resultados gerados por esta ferramenta.</p>
+
+            <hr class="disclaimer-divider">
+
+            <h3>Important Notice</h3>
+            <p>This online tax impact simulation tool is provided solely for illustrative and informational purposes and does not constitute, nor should it be construed as, legal, tax, or accounting advice.</p>
+            <p>The outputs generated by this tool are based on general assumptions and simplified parameters and may not reflect the specific facts, circumstances, or legal position of any particular taxpayer or transaction.</p>
+            <p>The use of this tool does not replace a case-specific assessment by a qualified attorney, tax advisor, or other professional, nor should it be relied upon as a basis for making decisions without obtaining appropriate professional advice.</p>
+            <p>No liability is accepted for any actions taken or decisions made based solely on the information or results produced by this tool.</p>
+        </div>
+        <div class="disclaimer-footer">
+            <button type="button" class="disclaimer-btn" id="accept-disclaimer">Li e estou ciente / I understand</button>
+        </div>
+    </div>
+</div>
+
+<script src="app.js" defer></script>
+
+</body>
+</html>
